@@ -2,10 +2,6 @@ defmodule DerivativeTest do
   use ExUnit.Case
   doctest Derivative
 
-  test "greets the world" do
-    assert Derivative.hello() == :world
-  end
-
   test "Derivate constant value with respect to x, '7'" do
     e = {:num, 7}
     assert Derivative.find_derivative(e, :x)
@@ -167,6 +163,13 @@ defmodule DerivativeTest do
 #      p = Derivative.pretty_print(s)
 #      assert p == "2x"
 #    end
+
+  test "Find derivative, simplify and pretty print '7 + x^2 with x = 3" do
+    ast = {:add, {:num, 7}, {:pow, {:var, :x}, {:num, 2}}}
+    variable = :x
+    value = 3
+    assert Derivative.run(ast, variable, value) == :ok
+  end
 end
 
 
