@@ -98,16 +98,7 @@ defmodule Derivative do
     }
   end
 
-  # Division
-#  def find_derivative({:div, {:num, n}, e}, v) do
-#    {:div,
-#      {:mul,
-#        {:num, -n},
-#        find_derivative(e, v)
-#      },
-#      {:pow, e, {:num, 2}}
-#    }
-#  end
+# Quotient rule
   def find_derivative({:div, e1, e2}, v) do
     {:div,
       {:add,
@@ -226,14 +217,14 @@ end
 #  def pretty_print({:mul, e, {:num, n}}), do: "#{n}#{pretty_print(e)}"
 
   def pretty_print({:add, e1, e2}), do: "#{pretty_print(e1)} + #{pretty_print(e2)}"
-  def pretty_print({:div, e1, e2}) do "(#{pretty_print(e1)}/#{pretty_print(e2)})" end
+  def pretty_print({:div, e1, e2}), do: "(#{pretty_print(e1)}/#{pretty_print(e2)})"
   def pretty_print({:mul, e1, e2}), do: "(#{pretty_print(e1)} * #{pretty_print(e2)})"
   def pretty_print({:pow, e1, e2}), do: "(#{pretty_print(e1)})^#{pretty_print(e2)}"
 
-  def pprint({:ln, e}), do: "ln(#{pprint(e)})"
-  def pprint({:sqrt, e}), do: "sqrt(#{pprint(e)})"
-  def pprint({:sin, e}), do: "sin(#{pprint(e)})"
-  def pprint({:cos, e}), do: "cos(#{pprint(e)})"
+  def pretty_print({:ln, e}), do: "ln(#{pretty_print(e)})"
+  def pretty_print({:sqrt, e}), do: "sqrt(#{pretty_print(e)})"
+  def pretty_print({:sin, e}), do: "sin(#{pretty_print(e)})"
+  def pretty_print({:cos, e}), do: "cos(#{pretty_print(e)})"
 
 
   @spec calculate(expr(), atom(), number()) :: expr()
