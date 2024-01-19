@@ -39,6 +39,40 @@
 
 \section*{Introduction}
 \label{sec:introduction}
+The assignment involved creating a program that finds the derivative of functions at
+given value of x.
+
+The given function is already parsed into an \emph{abstract syntax tree} (AST).
+An AST is a tree data structure that ''abstracts away'' certain details.
+In this case it represents the syntactic structure of the function in question.
+
+This assigment is based on the instruction
+\href{https://people.kth.se/~johanmon/courses/id1020/seminars/derivative/derivative.pdfl}{Taking the Derivative}
+by course examiner Johan Montelius.
+
+\section{Literature Study}
+The pre-recorded lectures for the assigment
+\href{https://canvas.kth.se/courses/44911/assignments/275580}{Derivatan},
+given by the course examiner, were reviewed,
+
+Elixir-syntax and similar topics was acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+
+The project group also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
+\subsction*{limitations}
+\begin{enumerate}
+    \item one variable calculus
+    \item neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment
+    \item not all derivative rules are included
+\end{enumerate}
 
 \section*{Methods}
 \label{sec:methods}
@@ -53,12 +87,25 @@ Quick-fixes and editing was, however, done in \emph{Vim}.
 
 \subsection*{The overall Work-flow} % BYT NAMN
 \label{subsec:workflow}
+Given functions, represented as ASTs, are traversed and evaluated.
+Both simplifications and calculations are included in the evaluation processes.
+All outputs are pretty printed.
+
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{Test Driven Development}{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}
+(TDD).
+The basic steps follows the \emph{Red-Green-Refactor cycle}; writing failing tests (Red), make them pass (Green),
+and finally refactor the code (to improve overall design without changing behavior)
 
 \section*{Result}
 \label{sec:result}
+The Mix-project for this assignment, including all relative functions and Unit-test can be found on GitHub
 
 \subsubsection*{GitHub-Repo}
-\url{https://github.com/VincentFerrigan/kth-iv1351-data-storage-paradigms}
+\url{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/1/derivative}
+
+
 
 \section*{Discussion}
 \label{sec:discussion}
