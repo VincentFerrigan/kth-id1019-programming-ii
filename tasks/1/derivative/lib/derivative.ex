@@ -27,6 +27,17 @@ defmodule Derivative do
     | {:sqrt, expr()}
     | literal()
 
+  @spec run(expr(), atom(), number()) :: ??
+  def run(ast, variable, value) do
+    derivative_of_function = find_derivative(ast, variable)
+    simplification =  simplify(derivative_of_function)
+    result = calculate(simplification)
+
+    IO.write("The derivative of function #{pretty_print(ast)} at given value of x = #{value}:\n\n")
+    IO.write("Derivative: #{pretty_print(derivative_of_function)}\n")
+    IO.write("Simplified: #{pretty-print(simplification)}\n")
+    IO.write("Calculated: #{pretty_print(result)}\n")
+  end
 
   @spec find_derivative(expr(), atom()) :: expr()
 
