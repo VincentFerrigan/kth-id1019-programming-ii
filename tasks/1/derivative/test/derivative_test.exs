@@ -49,9 +49,12 @@ defmodule DerivativeTest do
     e = {:pow, {:var, :x}, {:num, 2}}
     assert Derivative.find_derivative(e, :x)
       == {:mul,
-           {:num, 2},
-           {:pow, {:var, :x}, {:num, 1}}
-          }
+           {:num, 1},
+           {:mul,
+             {:num, 2},
+             {:pow, {:var, :x}, {:num, 1}}
+           }
+         }
   end
 
   test "Simplify 3 + 2" do
@@ -137,7 +140,7 @@ defmodule DerivativeTest do
     d = Derivative.find_derivative(e, :x)
     s = Derivative.simplify(d)
     p = Derivative.pretty_print(s)
-    assert p == "-(x^⁻2)"
+    assert p == "(-1/x^2)"
   end
 
     test "Find derivative, simplify and pretty print 1/2x" do
@@ -149,7 +152,7 @@ defmodule DerivativeTest do
       d = Derivative.find_derivative(e, :x)
       s = Derivative.simplify(d)
       p = Derivative.pretty_print(s)
-      assert p == "-(-2x^-2)"
+      assert p == "-(1/2x^2)"
     end
 
 #  test "Find derivative, simplify and pretty print 1/sin(2x)" do

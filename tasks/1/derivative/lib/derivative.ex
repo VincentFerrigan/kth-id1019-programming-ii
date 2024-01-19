@@ -55,8 +55,10 @@ defmodule Derivative do
   ## Examples
 
   iex> Derivative.run({:add, {:num, 7}, {:pow, {:var, :x}, {:num, 2}}}, :x, 3)
-  The derivative of function 7 + x^2 at given value of x = 3.
-  Derivative: 0 + 2x^1
+  The steps taken to find the derivative of function 7 + (x)^2,
+  at given value of x = 3.
+
+  Derivative: 0 + (1 * (2 * (x)^1))
   Simplified: 2x
   Calculated: 6
   :ok
@@ -67,8 +69,8 @@ defmodule Derivative do
     simplification =  simplify(derivative_of_function)
     result = simplify(calculate(simplification, variable, value))
 
-    IO.write("The derivative of function #{pretty_print(ast)}
-    at given value of x = #{value}.\n")
+    IO.write("The steps taken to find the derivative of function \
+#{pretty_print(ast)}, \nat given value of x = #{value}.\n\n")
     IO.write("Derivative: #{pretty_print(derivative_of_function)}\n")
     IO.write("Simplified: #{pretty_print(simplification)}\n")
     IO.write("Calculated: #{pretty_print(result)}\n")
@@ -96,62 +98,50 @@ defmodule Derivative do
     }
   end
 
-  # Power Rule: x^n = nx^(n−1)
-  def find_derivative({:pow, {:var, v}, {:num, n}}, v) do
-    {:mul,
-      {:num, n},
-      {:pow, {:var, v}, {:num, n-1}}
-    }
-  end
-
-  # Division rule (a bit unsure)
-  def find_derivative({:div, {:num, 1}, e}, v) do
-      find_derivative({:pow, e, {:num, -1}}, v)
-  end
-
+  # Division
 #  def find_derivative({:div, {:num, n}, e}, v) do
-# # Something
-#  end
-
-#  def find_derivative({:div, e1, e2}, v) do
 #    {:div,
-#      {:add,
-#        {:mul, find_derivative(e1, v), e2},
-#        {:mul,
-#          {:mul, e1, find_derivative(e2, v)},
-#          {:num, -1}
-#        }
+#      {:mul,
+#        {:num, -n},
+#        find_derivative(e, v)
 #      },
-#      {:pow, e2, {:num, 2}}
+#      {:pow, e, {:num, 2}}
 #    }
 #  end
+  def find_derivative({:div, e1, e2}, v) do
+    {:div,
+      {:add,
+        {:mul, find_derivative(e1, v), e2},
+        {:mul,
+          {:num, -1},
+          {:mul, e1, find_derivative(e2, v)}
+       }
+      },
+      {:pow, e2, {:num, 2}}
+    }
+  end
 
   # Power Rule: f^n = nf^(n−1)f'
   def find_derivative({:pow, e, {:num, n}}, v) do
     {:mul,
+      find_derivative(e, v),
       {:mul,
         {:num, n},
         {:pow, e, {:num, n-1}}
-      },
-    find_derivative(e, v)
-   }
+      }
+    }
   end
 
-
 #  Logarithms ln(x) = 1/x
-def find_derivative({:ln, e}, v), do: {:pow, find_derivative(e, v), {:num, -1}}
-#def find_derivative({:ln, e}, v) do
-#  {:mul,
-#    {:pow, e, {:num, -1}},
-#    find_derivative(e, v)
-#  }
-#end
+def find_derivative({:ln, e}, v), do: {:div, find_derivative(e, v), e}
 
 #  Square Root √x = 	(½)x-½
 def find_derivative({:sqrt, e}, v) do
-  find_derivative({:pow, e, {:num, 0.5}}, v)
+    {:div,
+      find_derivative(e, v),
+      {:mul, {:num, 2}, {:sqrt, e}}
+    }
 end
-
 
 #  Trigonometry (x is in radians)
   def find_derivative({:sin, e}, v) do
@@ -171,49 +161,58 @@ end
   @spec simplify(expr()) :: expr()
   def simplify({:num, n}),      do: ({:num, n})
   def simplify({:var, v}),      do: ({:var, v})
-  def simplify({:pow, e1, e2}), do: simplify_exp(simplify(e1), simplify(e2))
-  def simplify({:sqrt, e}),     do: simplify_sqrt(simplify(e))
+
+  def simplify({:add, e1, e2}), do: simplify_add(simplify(e1), simplify(e2))
   def simplify({:mul, e1, e2}), do: simplify_mul(simplify(e1), simplify(e2))
   def simplify({:div, e1, e2}), do: simplify_div(simplify(e1), simplify(e2))
-  def simplify({:add, e1, e2}), do: simplify_add(simplify(e1), simplify(e2))
+  def simplify({:pow, e1, e2}), do: simplify_pow(simplify(e1), e2)
+  def simplify({:ln, e}),       do: simplify_ln(simplify(e))
+  def simplify({:sqrt, e}),     do: simplify_sqrt(simplify(e))
   def simplify({:sin, e}),      do: {:sin, simplify(e)}
   def simplify({:cos, e}),      do: {:sin, simplify(e)}
   def simplify(e),              do: e
 
-  # exp
-  def simplify_exp(_, {:num, 0}), do: {:num, 1}
-  def simplify_exp(e, {:num, 1}), do: simplify(e)
-  def simplify_exp({:num, n1}, {:num, n2}), do: {:num, :math.pow(n1, n2)}
-  #  def simplify_exp(e1, e2), do: {:pow, e1, e2}
-  def simplify_exp(e1, e2), do: {:pow, simplify(e1), simplify(e2)}
+  # add
+  def simplify_add({:num, 0}, e), do: simplify(e)
+  def simplify_add(e, {:num, 0}), do: simplify(e)
+  def simplify_add({:num, n1}, {:num, n2}), do: {:num, n1 + n2}
+  def simplify_add({:var, v}, {:var, v}), do: {:mul, {:num, 2}, {:var, v}}
+  def simplify_add(e1, e2), do: {:add, e1, e2}
 
   # mul
   def simplify_mul({:num, 0}, _), do: {:num,0}
   def simplify_mul(_, {:num, 0}), do: {:num,0}
-  def simplify_mul({:num, 1}, e), do: simplify(e)
-  def simplify_mul(e, {:num, 1}), do: simplify(e)
-  def simplify_mul({:var, v}, {:var, v}), do: {:pow, {:num, 2}, {:var, v}}
+  def simplify_mul({:num, 1}, e), do: e
+  def simplify_mul(e, {:num, 1}), do: e
   def simplify_mul({:num, n1}, {:num, n2}), do: {:num, n1 * n2}
-  def simplify_mul(e1, e2), do: {:mul, simplify(e1), simplify(e2)} ## should I add a recursive like for add?
+  def simplify_mul({:var, v}, {:var, v}), do: {:pow, {:var, v}, {:num, 2}}
+  def simplify_mul(e1, e2), do: {:mul, e1, e2}
 
   # div
   #  division
   def simplify_div(e, {:num, 1}), do: e
-  def simplify_div({:num, n1}, {:num, n2}), do: {:num, n1 / n2}
-  def simplify_div({_, l}, {_, l}), do: {:num, 1}
+#  def simplify_div({:num, n1}, {:num, n2}), do: {:num, n1 / n2}
+#  def simplify_div({l, _}, {_, l}), do: {:num, 1}
   def simplify_div(e1, e2), do: {:div, e1, e2}
 
-  # add
-  def simplify_add({:num, n1}, {:num, n2}), do: {:num, n1+n2}
-  def simplify_add({:var, v}, {:var, v}), do: {:mul, {:num, 2}, {:var, v}}
-  def simplify_add({:num, 0}, e), do: simplify(e)
-  def simplify_add(e, {:num, 0}), do: simplify(e)
-  def simplify_add(e1, e2), do: {:add, e1, e2}
+  # pow
+  def simplify_pow(_, {:num, 0}), do: {:num, 1}
+  def simplify_pow(e, {:num, 1}), do: e
+  def simplify_pow({:pow, e, {:num, n1}}, {:num, n2}), do: simplify({:pow, e, {:num, n1 * n2}})
+  def simplify_pow({:num, n1}, {:num, n2}), do: {:num, :math.pow(n1, n2)}
+  def simplify_pow(e1, e2), do: {:pow, e1, e2}
+
+  # ln
+  def simplify_ln({:num, 1}), do: {:num, 0}
+  def simplify_ln({:num, 0}), do: {:num, 0}
+  def simplify_ln(e), do: {:ln, e}
 
   # sqrt
   def simplify_sqrt({:num, n}), do: {:num, :math.sqrt(n)}
   def simplify_sqrt(e), do: {:sqrt, e}
 
+  # Pretty printing
+  @spec pretty_print(expr()) :: string()
   def pretty_print({:num, n}), do: "#{n}"
   def pretty_print({:var, v}), do: "#{v}"
 #  def pretty_print({:mul, {:num, -1}, {:var, v}}), do: "-#{v}"
@@ -223,19 +222,18 @@ end
 
   def pretty_print({:mul, {:num, -1}, e}), do: "-(#{pretty_print(e)})"
   def pretty_print({:mul, e, {:num, -1}}), do: "-(#{pretty_print(e)})"
-  def pretty_print({:mul, {:num, n}, e}), do:  "#{n}#{pretty_print(e)}"
-  def pretty_print({:mul, e, {:num, n}}), do: "#{n}#{pretty_print(e)}"
+#  def pretty_print({:mul, {:num, n}, e}), do:  "#{n}#{pretty_print(e)}"
+#  def pretty_print({:mul, e, {:num, n}}), do: "#{n}#{pretty_print(e)}"
 
-  def pretty_print({:mul, e1, e2}), do: "(#{pretty_print(e1)} * #{pretty_print(e2)})"
-  def pretty_print({:pow, e1, e2}), do: "#{pretty_print(e1)}^#{pretty_print(e2)}"
   def pretty_print({:add, e1, e2}), do: "#{pretty_print(e1)} + #{pretty_print(e2)}"
+  def pretty_print({:div, e1, e2}) do "(#{pretty_print(e1)}/#{pretty_print(e2)})" end
+  def pretty_print({:mul, e1, e2}), do: "(#{pretty_print(e1)} * #{pretty_print(e2)})"
+  def pretty_print({:pow, e1, e2}), do: "(#{pretty_print(e1)})^#{pretty_print(e2)}"
 
-  def pretty_print({:div, e1, e2}) do "(#{pretty_print(e1)} / #{pretty_print(e2)})" end
-
-  def calculate(ast) do
-    #/todo
-    ast
-  end
+  def pprint({:ln, e}), do: "ln(#{pprint(e)})"
+  def pprint({:sqrt, e}), do: "sqrt(#{pprint(e)})"
+  def pprint({:sin, e}), do: "sin(#{pprint(e)})"
+  def pprint({:cos, e}), do: "cos(#{pprint(e)})"
 
 
   @spec calculate(expr(), atom(), number()) :: expr()
@@ -244,7 +242,7 @@ end
   def calculate({:var, v}, _, _), do: {:num, v}
   def calculate({:add, e1, e2}, v, n), do: {:add, calculate(e1, v, n), calculate(e2, v, n)}
   def calculate({:mul, e1, e2}, v, n), do: {:mul, calculate(e1, v, n), calculate(e2, v, n)}
-  def calculate({:exp, e1, e2}, v, n), do: {:exp, calculate(e1, v, n), calculate(e2, v, n)}
+  def calculate({:pow, e1, e2}, v, n), do: {:pow, calculate(e1, v, n), calculate(e2, v, n)}
   def calculate({:ln, e}, v, n), do: {:ln, calculate(e, v, n)}
   def calculate({:div, e1, e2}, v, n), do: {:div, calculate(e1, v, n), calculate(e2, v, n)}
   def calculate({:sqrt, e}, v, n), do: {:sqrt, calculate(e, v, n)}
