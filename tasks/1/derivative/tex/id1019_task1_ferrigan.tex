@@ -4,6 +4,7 @@
 \usepackage[english]{babel}
 
 \usepackage{hyperref}
+\usepackage{amsmath}
 
 % Code highligting
 % \usepackage{minted}
@@ -21,7 +22,12 @@
 \usepackage{subcaption}
 
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.18} 
+\pgfplotsset{compat=1.18}
+
+% Spacing
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+
 
 \begin{document}
 
@@ -48,8 +54,23 @@ In this case it represents the syntactic structure of the function in question.
 This assigment is based on the instruction
 \href{https://people.kth.se/~johanmon/courses/id1020/seminars/derivative/derivative.pdfl}{Taking the Derivative}
 by course examiner Johan Montelius.
+The Mix-project for this assignment, including all relative functions and Unit-test can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/1/derivative}{GitHub-Repo}
 
-\section{Literature Study}
+
+
+%\subsection*{limitations}
+%\begin{enumerate}
+%    \item one variable calculus,
+%    \item neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment, and
+%    \item not all derivative rules are included.
+%\end{enumerate}
+
+\section*{Methods}
+\label{sec:methods}
+
+\subsection*{Literature Study}
+\label{subsec:methods}
 The pre-recorded lectures for the assigment
 \href{https://canvas.kth.se/courses/44911/assignments/275580}{Derivatan},
 given by the course examiner, were reviewed.
@@ -63,21 +84,11 @@ The project group also relied on textbooks found on
 \href{https://learning.oreilly.com}{O'Reilly Media},
 especially Brute Tate's
 \href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
-Limitations are as followed; item one variable calculus,
+Limitations are as followed; one variable calculus,
 neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment, and
 item not all derivative rules are included.
 
-%\subsection*{limitations}
-%\begin{enumerate}
-%    \item one variable calculus,
-%    \item neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment, and
-%    \item not all derivative rules are included.
-%\end{enumerate}
-
-\section*{Methods}
-\label{sec:methods}
-
-\subsection*{Tools and packages}
+\subsubsection*{Tools and packages}
 \label{subsec:tools}
 All code was written in \emph{IntelliJ IDEA}.
 Quick-fixes and editing was, however, done in \emph{Vim}. 
@@ -85,30 +96,26 @@ Quick-fixes and editing was, however, done in \emph{Vim}.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
 This report was also written in plain text mode -- \LaTeX.
 
-\subsection*{The overall Work-flow} % \todo BYT NAMN?
+\subsubsection*{The overall Work-flow} % \todo BYT NAMN?
 \label{subsec:workflow}
 Given functions, represented as ASTs, are traversed and evaluated.
 Both simplifications and calculations are included in the evaluation processes.
 All outputs are pretty printed.
-
 The development was an iterative approach with ''trail and errors''.
 The author practiced
 \href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
 (TDD).
 The basic steps follows the \emph{Red-Green-Refactor cycle}; writing failing tests (Red), make them pass (Green),
-and finally refactor the code (to improve overall design without changing behavior)
+and finally refactor the code.
 
 \section*{Result}
 \label{sec:result}
-The Mix-project for this assignment, including all relative functions and Unit-test can be found on GitHub:
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/1/derivative}{GitHub-Repo}
-
 The head function
 \mintinline{elixir}{Derivative.run/3}
 calculates and prints the derivative of a given mathematical expression,
 along with its simplified form and calculated value at a specific point (see example
 below).
-\begin{minted}{elixir}
+\begin{minted}[fontsize=\small]{elixir}
 iex(1)> f = {:add, {:num, 7}, {:pow, {:var, :x}, {:num, 2}}}
 {:add, {:num, 7}, {:pow, {:var, :x}, {:num, 2}}}
 iex(2)> Derivative.run(f, :x, 3)
@@ -120,7 +127,6 @@ Simplified: 2x
 Calculated: 6
 :ok
 \end{minted}
-
 This function, found in listing
 ~\ref{listing:run()},
 takes a mathematical expression represented in a structured format
@@ -129,17 +135,6 @@ a variable as an \mintinline{elixir}{atom()}, and a numeric value.
 It computes the derivative of the expression with respect to the given variable, simplifies this derivative,
 calculates its value at the specified number, and then simplifies this calculated value.
 The original derivative, its simplified form, and the final simplified calculated value are printed to the console.
-
-The derivative, its simplified form, and the calculation result are printed to the console
-(a.k.a. \emph{pretty printing}).
-The function takes the following parameters and returns an \mintinline{elixir}{:ok} on successful execution:
-% /todo Should it raise an exection? Nice to have
-\begin{description}\small
-    \item[\mintinline{elixir}{ast}:] The mathematical expression to be differentiated (type \mintinline{elixir}{expr()}).
-    \item[\mintinline{elixir}{variable}:] The variable (as an \mintinline{elixir}{atom()}) with respect to which the derivative is to be taken.
-    \item[\mintinline{elixir}{value}:] The numeric value at which the derivative is to be evaluated.
-\end{description}
-
 \begin{longlisting}
     \inputminted[
         label=Derivative.run/3,
@@ -148,14 +143,25 @@ The function takes the following parameters and returns an \mintinline{elixir}{:
         lastline=79,
         xleftmargin=-5mm,  % Adjust this value as needed
 %        frame=single,
-%        fontsize=\footnotesize,
+        fontsize=\small,
     ]{elixir}{../lib/derivative.ex}
     \caption{
         Function for calculating the derivative of a given function at given value of variable.
     }
     \label{listing:run()}
 \end{longlisting}
-
+The derivative, its simplified form, and the calculation result are printed to the console
+(a.k.a. \emph{pretty printing}).
+On successful execution the function returns an
+\mintinline{elixir}{:ok}.
+%The function takes the following parameters and returns an \mintinline{elixir}{:ok} on successful execution:
+%% /todo Should it raise an exection? Nice to have
+%\begin{description}\small
+%    \item[\mintinline{elixir}{ast}:] The mathematical expression to be differentiated (type \mintinline{elixir}{expr()}).
+%    \item[\mintinline{elixir}{variable}:] The variable (as an \mintinline{elixir}{atom()}) with respect to which the derivative is to be taken.
+%    \item[\mintinline{elixir}{value}:] The numeric value at which the derivative is to be evaluated.
+%\end{description}
+In the report, all auxiliary functions will be briefly explained.
 \subsubsection*{DSL}
 The assignment also includes metaprogramming.
 i.e. \mintinline{elixir}{@type} definitions creating a small \emph{Domain Specific Language} DSL.
@@ -163,27 +169,98 @@ A DSL is a specialized mini-language created to express ideas, configurations, o
 more efficiently and clearly.
 In this case, the domain is mathematical expressions,
 and our AST structure is tailored to express these expressions in a specific, structured way.
-\begin{minted}{elixir}
-@type literal() :: {:num, number()} | {:var, atom()}
+%\begin{minted}[fontsize=\small]{elixir}
+%@type literal() :: {:num, number()} | {:var, atom()}
+%
+%@type expr() ::
+%  {:add, expr(), expr()}    # Addition of two expressions.
+%| {:mul, expr(), expr()}    # Multiplication of two expressions.
+%| {:pow, expr(), literal()} # An expression raised to a literal power.
+%| {:ln, expr()}             # Natural logarithm of an expression.
+%....
+%| literal()
+%\end{minted}
+%
+\subsubsection*{Finding Derivatives}
+In Elixir it is possible to have several definitions of the same function and arity.
+This technique is called function-overloading where and in this case.
+In order to choose which function to call,
+Elixir pattern matches the parameters.
+(The order of matching is top-down as in regular pattern matching.)
+All function, included the derivative function,
+\mintinline{bash}{finding_derivative/2} are overloaded.
+The author will only mention a few.
 
-@type expr() ::
-  {:add, expr(), expr()}    # Addition of two expressions.
-| {:mul, expr(), expr()}    # Multiplication of two expressions.
-| {:pow, expr(), literal()} # An expression raised to a literal power.
-| {:ln, expr()}             # Natural logarithm of an expression.
-....
-| literal()
+The derivative function follows the \emph{quotient rule} i.e.
+%\usepackage{amsmath}
+let \( f(x) = \frac{g(x)}{h(x)} \) where \( g \) and \( h \) are differentiable functions.
+The derivative of \( f \) is derived as follows:
+    \begin{align*}
+        f'(x) &= \left( \frac{g(x)}{h(x)} \right)'
+        &= \frac{g'(x)h(x) - g(x)h'(x)}{[h(x)]^2}
+    \end{align*}
+Which translates to the following:
+\begin{minted}[fontsize=\small]{elixir}
+# Quotient rule
+def find_derivative({:div, e1, e2}, v) do
+  {:div,
+    {:add,
+      {:mul, find_derivative(e1, v), e2},
+      {:mul, {:num, -1}, {:mul, e1, find_derivative(e2, v)}}},
+    {:pow, e2, {:num, 2}}}
+  end
+
 \end{minted}
+Naturally, simplifying these expressions are required.
+For example, using the following rule of exponents:
+\textbf{Zero Exponent Rule:} \( a^0 = 1 \), for \( a \neq 0 \) and
+\textbf{Power of a Product Rule:} \( (ab)^n = a^n b^n \).
+\begin{minted}[fontsize=\small]{elixir}
+@spec simplify(expr()) :: expr()
+def simplify({:pow, e1, e2}), do: simplify_pow(simplify(e1), e2)
+def simplify_pow(_, {:num, 0}), do: {:num, 1}
+def simplify_pow(e, {:num, 1}), do: e
+def simplify_pow({:pow, e, {:num, n1}}, {:num, n2}) do
+  simplify({:pow, e, {:num, n1 * n2}})
+end
+# etc...
+\end{minted}
+\subsubsection*{Calculating}
+Calculate the value of a derived expression is straight forward.
+The \mintinline{elixir}{calculate/3} function ''calculates'' by mapping
+the variables with given value.
+\begin{minted}[fontsize=\small]{elixir}
+@spec calculate(expr(), atom(), number()) :: expr()
+def calculate({:num, n}, _, _), do: {:num, n}
+def calculate({:var, v}, v, n), do: {:num, n}
+def calculate({:var, v}, _, _), do: {:num, v}
+def calculate({:sin, e}, v, n), do: {:sin, calculate(e, v, n)}
+#...etc
+\end{minted}
+Please note that the result must be further simplified, as performed in the head function
+\mintinline{elixir}{Derivative.run/3} in
+~\ref{listing:run()},
 
+\subsubsection*{Pretty printing}
+For a more ''human readable'' output, the author applied pretty-printing functions
+on the AST. For example:
+\begin{minted}[fontsize=\small]{elixir}
+@spec pretty_print(expr()) :: string()
+def pretty_print({:num, n}), do: "#{n}"
+def pretty_print({:var, v}), do: "#{v}"
+def pretty_print({:mul, {:num, n}, {:var, v}}), do: "#{n}#{v}"
+def pretty_print({:mul, {:var, v}, {:num, n}}), do: "#{n}#{v}"
+def pretty_print({:add, e1, e2}), do: "#{pretty_print(e1)} + #{pretty_print(e2)}"
+def pretty_print({:div, e1, e2}), do: "(#{pretty_print(e1)}/#{pretty_print(e2)})"
+# etc...
+\end{minted}
 
 \section*{Discussion}
 \label{sec:discussion}
-    Developing the simplification process was quite tricky.
-    The program does not simplify all algebraic expressions all the way.
-
-    One example is the following
-
-\begin{minted}{bash}
+Developing the simplification process was quite tricky.
+The program does not simplify all algebraic expressions all the way.
+One issue was applying the quotient rule for exponents.
+\begin{minted}[fontsize=\small]{elixir}
 iex(3)> g
 {:div, {:num, 1}, {:mul, {:num, 2}, {:var, :x}}}
 iex(4)> Derivative.run(g, :x, 3)
