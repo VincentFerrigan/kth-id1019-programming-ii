@@ -24,3 +24,6 @@ derivative-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Intellij
+.idea/
