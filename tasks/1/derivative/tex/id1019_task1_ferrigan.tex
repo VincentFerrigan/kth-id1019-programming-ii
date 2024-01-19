@@ -6,13 +6,13 @@
 \usepackage{hyperref}
 
 % Code highligting
+% \usepackage{minted}
 \usepackage[outputdir=output/tex]{minted} % iom min makefile
 
-% \newenvironment{longlisting}{\captionsetup{type=listing}}{}
-% % \renewcommand\listoflistingscaption{Källkod....}
-% \renewcommand\listoflistingscaption{List of source codes}
-% \setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
-
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
 
 \usepackage{graphicx}
 \usepackage{pgf}
@@ -52,39 +52,40 @@ by course examiner Johan Montelius.
 \section{Literature Study}
 The pre-recorded lectures for the assigment
 \href{https://canvas.kth.se/courses/44911/assignments/275580}{Derivatan},
-given by the course examiner, were reviewed,
-
+given by the course examiner, were reviewed.
 Elixir-syntax and similar topics was acquired
 from both the
 \href{https://elixir-lang.org/docs.html}{Elixir official documentation}
 and the free Elixir Tutorial
 \href{https://elixirschool.com/en}{Elixir School
 website}.
-
 The project group also relied on textbooks found on
 \href{https://learning.oreilly.com}{O'Reilly Media},
 especially Brute Tate's
 \href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+Limitations are as followed; item one variable calculus,
+neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment, and
+item not all derivative rules are included.
 
-\subsction*{limitations}
-\begin{enumerate}
-    \item one variable calculus
-    \item neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment
-    \item not all derivative rules are included
-\end{enumerate}
+%\subsection*{limitations}
+%\begin{enumerate}
+%    \item one variable calculus,
+%    \item neither \emph{Lexical Analysis} nor {Syntactic Analysis} are included in the assignment, and
+%    \item not all derivative rules are included.
+%\end{enumerate}
 
 \section*{Methods}
 \label{sec:methods}
 
 \subsection*{Tools and packages}
 \label{subsec:tools}
-All tests were performed with Elixir's built-in test framework \emph{ExUnit.}
-
 All code was written in \emph{IntelliJ IDEA}.
 Quick-fixes and editing was, however, done in \emph{Vim}. 
 \emph{GIT} and \emph{GitHub} was used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+This report was also written in plain text mode -- \LaTeX.
 
-\subsection*{The overall Work-flow} % BYT NAMN
+\subsection*{The overall Work-flow} % \todo BYT NAMN?
 \label{subsec:workflow}
 Given functions, represented as ASTs, are traversed and evaluated.
 Both simplifications and calculations are included in the evaluation processes.
@@ -92,7 +93,7 @@ All outputs are pretty printed.
 
 The development was an iterative approach with ''trail and errors''.
 The author practiced
-\href{Test Driven Development}{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
 (TDD).
 The basic steps follows the \emph{Red-Green-Refactor cycle}; writing failing tests (Red), make them pass (Green),
 and finally refactor the code (to improve overall design without changing behavior)
@@ -104,7 +105,61 @@ The Mix-project for this assignment, including all relative functions and Unit-t
 \subsubsection*{GitHub-Repo}
 \url{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/1/derivative}
 
+The function
+\mintinline{elixir}{Derivative.run/3}
+calculates and prints the derivative of a given mathematical expression,
+along with its simplified form and calculated value at a specific point (see example
+below).
+\inputminted[
+%        label=Derivative.run/3,
+%        linenos=true,
+    firstline=57,
+    lastline=62,
+%        frame=single,
+    fontsize=\footnotesize,
+]{bash}{../lib/derivative.ex}
 
+This function, found in listing
+~\ref{listing:run()},
+takes a mathematical expression represented in a structured format
+(as AST defined by the \mintinline{elixir}{expr()} type),
+a variable as an \mintinline{elixir}{atom()}, and a numeric value.
+It computes the derivative of the expression with respect to the given variable, simplifies this derivative,
+calculates its value at the specified number, and then simplifies this calculated value.
+The original derivative, its simplified form, and the final simplified calculated value are printed to the console.
+
+The function, and its derivative (in its simplified form), and the calculation result are printed to the console
+(a.k.a. \emph{pretty printing}).
+
+The function takes the following parameters and returns an \mintinline{elixir}{:ok} on successful execution:
+% /todo Should it raise an exection? Nice to have
+\begin{enumerate}
+    \item
+    \item \mintinline{elixir}{ast}: The mathematical expression to be differentiated (type `expr()`).
+    \item \mintinline{elixir}{variable}: The variable (as an \mintinline{elixir}{atom()}) with respect to which the derivative is to be taken.
+    \item \mintinline{elixir}{value}: The numeric value at which the derivative is to be evaluated.
+\end{enumerate}
+
+% /Todo include an exception
+%## Examples
+%
+%#      iex> run({:sin, {:var, :x}}, :x, 0)
+%#      # Output of the derivative, simplified form, and calculated value at x = 0
+%"""
+\begin{longlisting}
+    \inputminted[
+        label=Derivative.run/3,
+        linenos=true,
+        firstline=64,
+        lastline=76,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/derivative.ex}
+    \caption{
+        Function for calculating the derivative of a given function at given value of variable.
+    }
+    \label{listing:run()}
+\end{longlisting}
 
 \section*{Discussion}
 \label{sec:discussion}
