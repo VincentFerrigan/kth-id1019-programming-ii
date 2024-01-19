@@ -140,7 +140,7 @@ defmodule DerivativeTest do
     d = Derivative.find_derivative(e, :x)
     s = Derivative.simplify(d)
     p = Derivative.pretty_print(s)
-    assert p == "(-1/x^2)"
+    assert p == "(-1/(x)^2)"
   end
 
     test "Find derivative, simplify and pretty print 1/2x" do
