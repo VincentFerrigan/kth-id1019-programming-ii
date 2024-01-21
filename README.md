@@ -1,5 +1,4 @@
 # Functional Programming and Concurrency in Elixir
-### ID1019 Programming II
 
 ## About The Project
 This repository contains my projects and assignments developed during a course focused on Functional Programming and Concurrency, 
