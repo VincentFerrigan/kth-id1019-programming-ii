@@ -38,7 +38,7 @@ defmodule EnvListTest do
     l = [a: 1, b: 2, c: 3]
     v = EnvList.lookup(l, :d)
 #    assert v == []
-    assert v == nil
+    assert v == :nil
   end
 
 end
