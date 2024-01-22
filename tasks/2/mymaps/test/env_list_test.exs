@@ -2,10 +2,6 @@ defmodule EnvListTest do
   use ExUnit.Case
   doctest EnvList
 
-  test "greets the world" do
-    assert EnvList.hello() == :world
-  end
-
   test "New list" do
     assert EnvList.new() == []
   end

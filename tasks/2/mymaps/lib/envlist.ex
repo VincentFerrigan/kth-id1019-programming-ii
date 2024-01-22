@@ -16,7 +16,6 @@ defmodule EnvList do
   def lookup([{key, value}| _], key), do:  {key, value}
   def lookup([ _ | tail ], key), do:  lookup(tail, key)
 
-
   @spec remove(list(), atom()) :: list()
   def remove([],_), do: nil
   def remove([{key, _} | tail], key), do: tail
