@@ -21,7 +21,7 @@ defmodule Benchmark do
   """
   @spec run(integer()) :: :ok
   def run(n) do
-    sizes = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]
+    sizes = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 2**14, 2**15]
 
     :io.format("# Benchmark with ~w operations,\n time per operation in us\n", [n])
     :io.format("~6.s~12.s~12.s~12.s\n", ["n", "add", "lookup", "remove"])
