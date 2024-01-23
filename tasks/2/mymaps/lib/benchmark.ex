@@ -40,10 +40,14 @@ defmodule Benchmark do
   end
 
   @doc """
-  Benchmarks a given implementation module across different data sizes.
+  Conducts a benchmark on a specific data structure implementation.
+    ## Parameters
+  - `impl_module`: The module implementing the data structure to benchmark.
+  - `sizes`: A list of sizes for which to run the benchmark.
+  - `n`: The number of operations to perform in each benchmark.
   """
   @spec benchmark(module(), list(integer()), integer()) :: :ok
-  defp benchmark(impl_module, sizes, n) do
+  def benchmark(impl_module, sizes, n) do
     Enum.each(sizes, fn (i) ->
       {i, t_add, t_lookup, t_remove} = benchmark_impl(impl_module, i, n)
       :io.format("~6.w~12.2f~12.2f~12.2f\n",
@@ -57,30 +61,43 @@ defmodule Benchmark do
   """
   @spec benchmark_impl(module(), integer(), integer()) :: {integer(), integer(), integer(), integer()}
   def benchmark_impl(impl_module, i, n) do
+    # Generate a sequence of random keys
     seq = Enum.map(1..i, fn(_) -> :rand.uniform(i) end)
+
+    # Populate the data structure with initial key-value pairs
+    # This forms the basis for the subsequent benchmarking operations
     data_structure = Enum.reduce(seq, impl_module.new(), fn(e, acc) ->
       impl_module.add(acc, e, :foo)
     end)
 
+    # Generate a new sequence of random keys for the benchmarking operations
     seq = Enum.map(1..n, fn(_) -> :rand.uniform(i) end)
+
+    # Measure the time taken to add elements to the data structure
+    # This benchmarks the efficiency of the add operation
     {add_time, _} = :timer.tc(fn() ->
       Enum.each(seq, fn(e) ->
         impl_module.add(data_structure, e, :foo)
       end)
     end)
 
+    # Measure the time taken to lookup elements in the data structure
+    # This benchmarks the efficiency of the lookup operation
     {lookup_time, _} = :timer.tc(fn() ->
       Enum.each(seq, fn(e) ->
         impl_module.lookup(data_structure, e)
       end)
     end)
 
+    # Measure the time taken to remove elements from the data structure
+    # This benchmarks the efficiency of the remove operation
     {remove_time, _} = :timer.tc(fn() ->
       Enum.each(seq, fn(e) ->
         impl_module.remove(data_structure, e)
       end)
     end)
 
+    # Return the size, and the times for add, lookup, and remove operations
     {i, add_time, lookup_time, remove_time}
   end
 end
