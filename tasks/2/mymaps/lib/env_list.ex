@@ -5,8 +5,8 @@ defmodule EnvList do
   Provides functionalities for managing a simple environment list.
   This module allows the creation and manipulation of a key-value list,
   supporting operations such as adding, looking up, and removing elements.
-  Each element in the list is a tuple containing an atom as the key and
-  any value. The implementation ensures unique keys in the list.
+  Each element in the list is a tuple containing a key and
+  its value. The implementation ensures unique keys in the list.
   """
 
   @doc """
@@ -35,7 +35,7 @@ defmodule EnvList do
       iex> EnvList.add([a: 1], :b, 2)
       [a: 1, b: 2]
   """
-  @spec add(list(), atom(), any()) :: list()
+  @spec add(list(), any(), any()) :: list()
   def add([], key, value), do: [{key, value} | []]
   def add([{key, _} | tail], key, value), do: [{key, value} | tail]
   def add([pre_list | tail], key, value), do: [pre_list | add(tail, key, value)]
@@ -51,7 +51,7 @@ defmodule EnvList do
       iex> EnvList.lookup([a: 1, b: 2], :c)
       :nil
   """
-  @spec lookup(list(), atom()) :: any()
+  @spec lookup(list(), any()) :: any()
   def lookup([], _), do: :nil
   def lookup([{key, value}| _], key), do:  {key, value}
   def lookup([ _ | tail ], key), do:  lookup(tail, key)
@@ -68,7 +68,7 @@ defmodule EnvList do
        iex> EnvList.remove([a: 1, b: 2], :c)
        [{:a, 1}, {:b, 2}]
   """
-  @spec remove(list(), atom()) :: list()
+  @spec remove(list(), any()) :: list()
   def remove([],_), do: :nil
   def remove([{key, _} | tail], key), do: tail
   def remove([pre_list | tail], key), do: [pre_list | remove(tail, key)]

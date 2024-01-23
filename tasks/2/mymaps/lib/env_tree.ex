@@ -5,8 +5,8 @@ defmodule EnvTree do
   Provides functionalities for managing a binary search tree.
   This module allows for the creation and manipulation of a key-value binary search tree,
   supporting operations such as adding, looking up, and removing elements.
-  Each node in the tree is a tuple {:node, key, value, left, right}, where 'key' is an atom,
-  'value' is any type, and 'left' and 'right' are the left and right subtrees, respectively.
+  Each node in the tree is a tuple {:node, key, value, left, right}, where 'key' and
+  'value' can be of any type, and 'left' and 'right' are the left and right subtrees, respectively.
   """
 
   @doc """
@@ -29,7 +29,7 @@ defmodule EnvTree do
       iex> EnvTree.add(nil, :a, 1)
       {:node, :a, 1, nil, nil}
   """
-  @spec add(tuple(), atom(), any()) :: tuple()
+  @spec add(tuple(), any(), any()) :: tuple()
   def add(:nil, key, value), do: {:node, key, value, :nil, :nil}
   def add({:node, key, _, left, right}, key, value) do
     {:node, key, value, left, right}
@@ -54,7 +54,7 @@ defmodule EnvTree do
       iex> EnvTree.lookup(nil, :b)
       nil
   """
-  @spec lookup(tuple(), atom()) :: tuple()
+  @spec lookup(tuple(), any()) :: tuple()
   def lookup(:nil, _), do: :nil
   def lookup({:node, key, value, _, _} , key), do: {key, value}
   def lookup({:node, k, _, left, _}, key) when key < k, do: lookup(left, key)
@@ -70,7 +70,7 @@ defmodule EnvTree do
       iex> EnvTree.remove({:node, :a, 1, nil, nil}, :a)
       nil
   """
-  @spec remove(tuple(), atom()) :: tuple()
+  @spec remove(tuple(), any()) :: tuple()
   def remove(:nil, _), do: :nil
   def remove({:node, key, _, :nil, right}, key), do: right
   def remove({:node, key, _, left, nil}, key), do: left
