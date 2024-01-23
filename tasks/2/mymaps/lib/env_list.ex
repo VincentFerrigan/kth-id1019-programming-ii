@@ -35,7 +35,7 @@ defmodule EnvList do
       iex> EnvList.add([a: 1], :b, 2)
       [a: 1, b: 2]
   """
-  @spec add(list(), any(), any()) :: list()
+  @spec add(list(), any(), any()) :: list(tuple())
   def add([], key, value), do: [{key, value} | []]
   def add([{key, _} | tail], key, value), do: [{key, value} | tail]
   def add([pre_list | tail], key, value), do: [pre_list | add(tail, key, value)]
@@ -68,8 +68,8 @@ defmodule EnvList do
        iex> EnvList.remove([a: 1, b: 2], :c)
        [{:a, 1}, {:b, 2}]
   """
-  @spec remove(list(), any()) :: list()
-  def remove([],_), do: :nil
+  @spec remove(list(), any()) :: list(tuple())
+  def remove([],_), do: []
   def remove([{key, _} | tail], key), do: tail
   def remove([pre_list | tail], key), do: [pre_list | remove(tail, key)]
 
