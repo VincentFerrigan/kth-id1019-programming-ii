@@ -76,7 +76,7 @@ The Mix-project for this assignment, including all relative functions and Unit-t
 The pre-recorded lectures on
 \href{https://canvas.kth.se/courses/44911/assignments/syllabus}{Lists, Recursion and Trees},
 given by the course examiner, were reviewed.
-Elixir-syntax and similar topics was acquired
+Elixir-syntax and similar topics were acquired
 from both the
 \href{https://elixir-lang.org/docs.html}{Elixir official documentation}
 and the free Elixir Tutorial
@@ -91,7 +91,7 @@ especially Brute Tate's
 \label{subsec:tools}
 All code was written in \emph{IntelliJ IDEA}.
 Quick-fixes and editing was, however, done in \emph{Vim}. 
-\emph{GIT} and \emph{GitHub} was used for version control.
+\emph{GIT} and \emph{GitHub} were used for version control.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
 For the visualization of benchmarking results, \emph{GNUPlot} was used.
 This report was also written in plain text mode -- \LaTeX.
@@ -128,7 +128,7 @@ end
 For the benchmarking module, Erlangs
 \mintinline{elixir}{:timer} module was used to measure the time taken for the
 \emph{add}, \emph{lookup}, and \emph{remove} operations.
-Both \emph{GNUPlot} and Python scrips where used to collect, mainipulate and present the results.
+Both \emph{GNUPlot} and Python scrips were used to collect, manipulate and present the results.
 
 \section*{Result}
 \label{sec:result}
@@ -147,6 +147,7 @@ Both return the key with its value as a tuple
 \mintinline{elixir}{:nil} if the key is not found.
 
 \begin{longlisting}
+    \belowcaptionskip=10pt
     \inputminted[
         label=Derivative.run/3,
 %        linenos=true,
@@ -157,7 +158,7 @@ Both return the key with its value as a tuple
         fontsize=\small,
     ]{elixir}{../lib/env_list.ex}
     \caption{
-        The implementation of the Lookup operation for list-based maps
+        The implementation of the Lookup operation for list-based maps.
     }
     \label{listing:EnvList.lookup()}
 \end{longlisting}
@@ -169,6 +170,7 @@ and satisfies the BST property: the key in each node must be greater than all ke
 the left subtree and less than those in the right subtree.
 
 \begin{longlisting}
+    \belowcaptionskip=10pt
     \inputminted[
         label=Derivative.run/3,
 %        linenos=true,
@@ -234,18 +236,18 @@ added, it was important for the benchmark to add a random set of keys.
 The tree roughly got a height of $\log n$ -- as one can see in the benchmark
 result in \autoref{fig:tm_lookup_performance} and \autoref{tab:performance_metrics_and_ratios_lookup}.
 
-The list-based map performes poorly compared to tree-based map.
+The list-based map performs poorly compared to tree-based map.
 Adding, removing or accessing a value requires one to traverse the list.
 The time complexity is therefore linear $O(n)$.
 
 According to
 \href{https://hexdocs.pm/elixir/1.12/Map.html}{Elixir official documentation on Maps}
 accessing specific keys in the
-build in module works in logarithmic time.
-    However, one can read from the benchmark results that the build-in model
+built-in module work in logarithmic time.
+    However, one can read from the benchmark results that the built-in model
     is faster than the tree-based customized implementation that the author wrote.
     The reason for this is that Elixir uses a hash trie data structure,
-    implemented in C++ (as mentioned in the instructions
+    implemented in C++ (as mentioned in the instructions:
 \href{https://people.kth.se/~johanmon/courses/id1019/seminars/environment/environment.pdf}{An environment}).
 %https://arunramgt.medium.com/elixir-internal-representation-of-large-maps-hamt-618e1275938d
 \end{document}
