@@ -1,8 +1,12 @@
 import csv
 
 def read_data(filename, operation):
-#     TODO create a general function for all operations: add, lookup, and remove
-#     def switch(operation):
+    if operation == "add":
+        col = 1
+    elif operation == "lookup":
+        col = 2
+    elif operation == "remove":
+        col = 3
 
     with open(filename, 'r') as file:
         reader = csv.reader(file, delimiter=' ')
@@ -13,10 +17,12 @@ def calculate_ratios(data1, data2):
     return {size: (data1[size] / data2[size] if size in data2 and data2[size] != 0 else 0)
             for size in data1}
 
-def write_combined_data_to_file(list_data, tree_data, map_data, ratios_tl, ratios_lm, ratios_tm, output_file):
+def write_combined_data_to_file(list_data, tree_data, map_data, ratios_tl, ratios_lm, ratios_tm, operation, output_file):
+    cap_op = operation[0].upper() + operation[1:]
     with open(output_file, 'w') as file:
         writer = csv.writer(file, delimiter=' ')
-        writer.writerow(['Size', 'List Add', 'Tree Add', 'Map Add', 'Tree/List Ratio', 'List/Map Ratio', 'Tree/Map Ratio'])
+        writer.writerow(['Size', 'List {0}'.format(cap_op), 'Tree {0}'.format(cap_op), 'Map {0}'.format(cap_op),
+                         'Tree/List Ratio', 'List/Map Ratio', 'Tree/Map Ratio'])
 
         sizes = set(list_data.keys()) | set(tree_data.keys()) | set(map_data.keys())
         for size in sorted(sizes):
@@ -29,16 +35,21 @@ def write_combined_data_to_file(list_data, tree_data, map_data, ratios_tl, ratio
                 ratios_lm.get(size, 0),
                 ratios_tm.get(size, 0)
             ])
+def write_combined_ratios_to_files_per_operation(operation):
+    # Read data from files
+    list_data = read_data('list.dat', operation)
+    tree_data = read_data('tree.dat', operation)
+    map_data = read_data('map.dat', operation)
 
-# Read data from files
-list_data = read_data('list.dat')
-tree_data = read_data('tree.dat')
-map_data = read_data('map.dat')
+    # Calculate ratios
+    ratios_tree_list = calculate_ratios(tree_data, list_data)
+    ratios_list_map = calculate_ratios(list_data, map_data)
+    ratios_tree_map = calculate_ratios(tree_data, map_data)
 
-# Calculate ratios
-ratios_tree_list = calculate_ratios(tree_data, list_data)
-ratios_list_map = calculate_ratios(list_data, map_data)
-ratios_tree_map = calculate_ratios(tree_data, map_data)
+    # Write combined data to a new file
+    write_combined_data_to_file(list_data, tree_data, map_data, ratios_tree_list, ratios_list_map, ratios_tree_map,
+                                operation, 'combined_{0}_ratios.dat'.format(operation))
 
-# Write combined data to a new file
-write_combined_data_to_file(list_data, tree_data, map_data, ratios_tree_list, ratios_list_map, ratios_tree_map, 'combined_ratios.dat')
+write_combined_ratios_to_files_per_operation("add")
+write_combined_ratios_to_files_per_operation("lookup")
+write_combined_ratios_to_files_per_operation("remove")
