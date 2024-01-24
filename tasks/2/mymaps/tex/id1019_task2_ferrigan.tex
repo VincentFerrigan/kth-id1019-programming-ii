@@ -24,7 +24,9 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
-\usepackage{pgfplotstable} % in your preamble
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
 
 % Spacing
 \usepackage{titlesec}
@@ -142,7 +144,7 @@ end
     col sep=space, % or col sep=tab, depending on your .dat file
     columns/Size/.style={column name=Size (n)},
     columns/Add/.style={column name=Add Time (us)},
-    columns/Lookup/.style={column name=Lookup Time (us)},
+    columns/Lookup/.style={column name=Lookup Time (\mu s)},
     columns/Remove/.style={column name=Remove Time (us)},
     ]{../data/list.dat}
     \caption{Performance Metrics for the Implementation}
@@ -160,6 +162,65 @@ end
     \caption{Performance Metrics for the Implementation}
     \label{tab:performance_metrics22}
 \end{table}
+
+\begin{table}[htbp]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=space, % adjust this based on your .dat file format
+        every head row/.style={before row=\toprule, after row=\midrule},
+        every last row/.style={after row=\bottomrule},
+        columns/Size/.style={column name=Size (n)},
+        columns/List/.style={column name=List (\mu s)},
+        columns/Tree/.style={column name=Tree (\mu s)},
+        columns/Map/.style={column name=Map (\mu s)},
+        columns/List:Tree/.style={column name=$\frac{List}{Tree}$},
+        columns/List:Map/.style={column name=$\frac{List}{Map}$},
+        columns/Tree:Map/.style={column name=$\frac{Tree}{Map}$},
+    ]{../data/combined_add_ratios.dat}
+    \caption{Comparative Performance Metrics and Ratios for the Add operation}
+    \label{tab:performance_metrics_and_ratios_add}
+\end{table}
+
+%\begin{table}[htbp]
+%    \centering
+%    \pgfplotstabletypeset[
+%        col sep=space, % Columns are separated by space
+%        header=has colnames, % The first line contains the column names
+%        string type,
+%        every head row/.style={before row=\toprule, after row=\midrule},
+%        every last row/.style={after row=\bottomrule},
+%        display columns/0/.style={column name=Size},
+%        display columns/1/.style={column name=List Add},
+%        display columns/2/.style={column name=Tree Add},
+%        display columns/3/.style={column name=Map Add},
+%        display columns/4/.style={column name=Tree/List Ratio},
+%        display columns/5/.style={column name=List/Map Ratio},
+%        display columns/6/.style={column name=Tree/Map Ratio},
+%    ]{path/to/combined_add_ratios.dat}
+%    \caption{Comparative Performance Metrics and Ratios}
+%    \label{tab:performance_metrics_and_ratios}
+%\end{table}
+%
+%
+%\begin{table}[htbp]
+%    \centering
+%    \pgfplotstabletypeset[
+%        col sep=space, % adjust this based on your .dat file format
+%        string type,
+%        every head row/.style={before row=\toprule, after row=\midrule},
+%        every last row/.style={after row=\bottomrule},
+%        columns/Size/.style={column name=Size},
+%        columns/List Add/.style={column name=List Lookup},
+%        columns/Tree Add/.style={column name=Tree Lookup},
+%        columns/Map Add/.style={column name=Map Lookup},
+%        columns/Tree/List Ratio/.style={column name=Tree/List Ratio},
+%        columns/List/Map Ratio/.style={column name=List/Map Ratio},
+%        columns/Tree/Map Ratio/.style={column name=Tree/Map Ratio},
+%    ]{../data/combined_lookup_ratios.dat}
+%    \caption{Comparative Performance Metrics and Ratios for the Lookup operation}
+%    \label{tab:performance_metrics_and_ratios_lookup}
+%\end{table}
+
 
 
 %The head function
