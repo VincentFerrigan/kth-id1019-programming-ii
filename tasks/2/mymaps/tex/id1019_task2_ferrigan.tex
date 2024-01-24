@@ -17,7 +17,7 @@
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{wrapfig}
-\usepackage[font=footnotesize,labelfont=bf,skip=2pt]{caption}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
 \usepackage{subcaption}
 
 \usepackage{pgfplots}
@@ -28,7 +28,8 @@
 
 % Spacing
 \usepackage{titlesec}
-\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
 
 \usepackage{hyperref}
 
@@ -51,22 +52,22 @@ The objective of this assignment is to explore and analyze
 the efficiency of
 different data structure implementations for storing
 and retrieving key-value pairs.
-These key-value databases are also referred to as ''map''.
-The \textbf{first task} involves developing two different implementations;
+These key-value databases are also referred to as ''maps''.
+The first task involves developing two different implementations;
 one based on a simple list structure and the
 another based on a tree structure.
 The latter was implemented as a \emph{Binary Search Tree} (BST).
 %A BST is a node-based binary tree data structure where each node has a key and value, and satisfies the BST property: the key in each node must be greater than all keys in the left subtree and less than those in the right subtree.
 
-The \textbf{second task} is to compare these two ''custom implementations'',
+The second task is to compare these two ''custom implementations'',
 both with eachother and, in terms of performance, with
 Elixir's built-in Map module.
 
 This assignment is based on the instruction
-\href{https://people.kth.se/~johanmon/courses/id1019/seminars/environment/environment.pdf}{An environment}
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/environment/environment.pdf}{'An environment'}
 by course examiner Johan Montelius.
-The Mix-project for this assignment, including all relative functions and Unit-test can be found on GitHub:
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/2/mymaps}{GitHub-Repo Programming II - My Maps}% TODO FUNKAR DEN? ÄNDRA NAMN
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/2/mymaps}{Repo Programming II - My Maps}% TODO FUNKAR DEN? ÄNDRA NAMN
 
 \section*{Methods}
 \label{sec:methods}
@@ -82,7 +83,7 @@ from both the
 and the free Elixir Tutorial
 \href{https://elixirschool.com/en}{Elixir School
 website}.
-The project group also relied on textbooks found on
+The author also relied on textbooks found on
 \href{https://learning.oreilly.com}{O'Reilly Media},
 especially Brute Tate's
 \href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
@@ -124,11 +125,13 @@ defmodule MapWrapper do
     def lookup(map, key), do: Map.get(map, key)
     def remove(map, key), do: Map.delete(map, key)
 end
-%\end{minted}
-For the benchmarking module, Erlangs
+\end{minted}
+For the
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/blob/main/tasks/2/mymaps/lib/benchmark.ex}{benchmarking module},
+Erlangs
 \mintinline{elixir}{:timer} module was used to measure the time taken for the
 \emph{add}, \emph{lookup}, and \emph{remove} operations.
-Both \emph{GNUPlot} and Python scrips were used to collect, manipulate and present the results.
+Both \emph{GNUPlot} and \emph{Python} scrips were used to collect, manipulate and present the results.
 
 \section*{Result}
 \label{sec:result}
@@ -139,15 +142,13 @@ Since all
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/2/mymaps/data}{tables (.dat)}% TODO FUNKAR DEN? ÄNDRA NAMN
 could be found on GitHub, the author has chosen only to present one of the operations; lookup.
 However, all operations will be addressed in the \hyperref[sec:discussion]{Discussion} section.
-
-The implementation of the lookup operation for list-based map can be found in Listing \autoref{listing:EnvList.lookup()}
+The implementation of the lookup operation for the list-based map can be found in Listing \autoref{listing:EnvList.lookup()}
 while the tree-based version can be found in Listing \autoref{listing:EnvTree.lookup()}.
 Both return the key with its value as a tuple
 \mintinline{elixir}{{key, value}} or
 \mintinline{elixir}{:nil} if the key is not found.
-
 \begin{longlisting}
-    \belowcaptionskip=10pt
+    \belowcaptionskip=5pt
     \inputminted[
         label=Derivative.run/3,
 %        linenos=true,
@@ -157,20 +158,15 @@ Both return the key with its value as a tuple
 %        frame=single,
         fontsize=\small,
     ]{elixir}{../lib/env_list.ex}
-    \caption{
-        The implementation of the Lookup operation for list-based maps.
-    }
+    \caption{The implementation of the Lookup operation for list-based maps.}
     \label{listing:EnvList.lookup()}
 \end{longlisting}
-
 As one can derive from the code in Listing ~\autoref{listing:EnvTree.lookup()},
 the tree-based map is implemented as a BST.
-A BST is a node-based binary tree data structure where each node has a key and value,
-and satisfies the BST property: the key in each node must be greater than all keys in
-the left subtree and less than those in the right subtree.
-
+A BST is a node-based binary tree data structure where each node contains a key and its value.
+All keys in a nodes left subtree must be less than those in its right subtree.
 \begin{longlisting}
-    \belowcaptionskip=10pt
+    \belowcaptionskip=5pt
     \inputminted[
         label=Derivative.run/3,
 %        linenos=true,
@@ -180,17 +176,13 @@ the left subtree and less than those in the right subtree.
 %        frame=single,
         fontsize=\small,
     ]{elixir}{../lib/env_tree.ex}
-    \caption{
-        The implementation of the Lookup operation for tree-based maps
-    }
+    \caption{The implementation of the Lookup operation for tree-based maps}
     \label{listing:EnvTree.lookup()}
 \end{longlisting}
-
 The result of the benchmark is illustrated in the figures and table below.
 ~\autoref{fig:lookup_performance} and ~\autoref{fig:tm_lookup_performance}
 diagrammatically visualize the lookup operation while the
 data is described in ~\autoref{tab:performance_metrics_and_ratios_lookup}.
-
     \begin{table}[htbp]
         \centering
         \pgfplotstabletypeset[
@@ -208,20 +200,19 @@ data is described in ~\autoref{tab:performance_metrics_and_ratios_lookup}.
         \caption{Comparative Performance Metrics and Ratios for the Lookup operation}
         \label{tab:performance_metrics_and_ratios_lookup}
     \end{table}
-
-    \begin{figure}[h]
+    \begin{figure}[htbp]
         \centering
         \includegraphics[width=\textwidth]{../data/lookup_performance.png}
         \caption{Lookup Operation Performance}
         \label{fig:lookup_performance}
     \end{figure}
 
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=\textwidth]{../data/tm_lookup_performance.png}
-        \caption{Lookup Operation Performance, comparing the Tree implementation with the built-in Map}
-        \label{fig:tm_lookup_performance}
-    \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{../data/tm_lookup_performance.png}
+    \caption{Lookup Operation Performance, comparing the Tree implementation with the built-in Map}
+    \label{fig:tm_lookup_performance}
+\end{figure}
 
 \section*{Discussion}
 \label{sec:discussion}
@@ -234,10 +225,10 @@ giving the operations a time complexity of $O(\log n)$.
 Since the shape of a BST depend on which order the nodes were
 added, it was important for the benchmark to add a random set of keys.
 The tree roughly got a height of $\log n$ -- as one can see in the benchmark
-result in \autoref{fig:tm_lookup_performance} and \autoref{tab:performance_metrics_and_ratios_lookup}.
+result in ~\autoref{fig:tm_lookup_performance} and ~\autoref{tab:performance_metrics_and_ratios_lookup}.
 
 The list-based map performs poorly compared to tree-based map.
-Adding, removing or accessing a value requires one to traverse the list.
+Since adding, removing or accessing a value requires one to traverse the list.
 The time complexity is therefore linear $O(n)$.
 
 According to
@@ -248,6 +239,6 @@ built-in module work in logarithmic time.
     is faster than the tree-based customized implementation that the author wrote.
     The reason for this is that Elixir uses a hash trie data structure,
     implemented in C++ (as mentioned in the instructions:
-\href{https://people.kth.se/~johanmon/courses/id1019/seminars/environment/environment.pdf}{An environment}).
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/environment/environment.pdf}{'An environment'}).
 %https://arunramgt.medium.com/elixir-internal-representation-of-large-maps-hamt-618e1275938d
 \end{document}
