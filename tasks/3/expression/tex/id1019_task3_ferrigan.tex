@@ -1,0 +1,182 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=2pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Spacing
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+
+\begin{document}
+
+\title{
+    Evaluating an expression
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+% \date{\today}
+\date{Spring Term 2023}
+
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+
+\section*{Methods}
+\label{sec:methods}
+
+\subsection*{Literature Study}
+\label{subsec:literature}
+\subsubsection*{Tools and packages}
+
+\label{subsec:tools}
+\subsubsection*{The overall Work-flow}
+
+\label{subsec:workflow}
+\section*{Result}
+\label{sec:result}
+
+\section*{Discussion}
+\label{sec:discussion}
+
+\end{document}
+
+% \begin{longlisting}
+%   \inputminted[
+%       label=Q1-Function,
+%       linenos=true,
+%       bgcolor=lightgray,
+%       firstline=28,
+%       lastline=45,
+% %        frame=single,
+%       fontsize=\footnotesize,
+%   ]{sql}{../../src/db/analytics/analytics.sql}
+%   \caption{
+%     Function for filtering and ordering output-table from view on given year.
+%     }
+%   \label{listing:q1_func}
+% \end{longlisting}
+
+% \begin{minted}{elixir}
+%   def append([], b) do b end
+%   def append([h|t], b) do
+%     [h | append(t, b)]
+%   end  
+% \end{minted}
+
+% If you want to include a program statement in running text you can do this
+% using for example teletype-text: {\tt append([1,2,3],[4,5])}.
+% using for example mintinline: \mintinline{elixir}{append([1,2,3],[3])}
+
+% \begin{table}[h]
+% \begin{center}
+% \begin{tabular}{l|c|c}
+% \textbf{prgm} & \textbf{run time} & \textbf{ratio}\\
+% \hline
+%   dummy      &  115 &     1.0\\
+%   union      &  535 &     4.6\\
+%   tailr      &  420 &     3.6\\
+% \end{tabular}
+% \caption{Union and friends, list of 50000 elements, run time in micro seconds}
+% \label{tab:table1}
+% \end{center}
+% \end{table}
+
+
+% \section*{Graphs}
+
+% Once you start to generate graphs make sure that they are readable and
+% have sensible information on the axes.
+
+% There are many ways to generate graphs but you want to use a way that
+% minimize manual work. My tool over the years has been {\em Gnuplot}
+% and if you do not have a favorite tool you could give it a try. The
+% Gnuplot program is a stand alone program that will generate a
+% graph that you then can include in you report.
+
+% If you work with Gnuplot you should write the commands needed to
+% generate a diagram in a small script. Take a look in the file {\tt
+%   fib.p} and you will see how the diagram in Fig.\ref{fig:images} was
+% created from the data given in {\tt fib.dat} (the {\tt .png} file was
+% generated from {\tt fib.pdf} using the Linux {\tt convert}
+% program found in {\tt imagemagick}).
+
+% When you include graphs you should make sure that the images you
+% include are not raster images (gif, png etc) but a vector image that
+% scales when you zoom-in. In Fig.\ref{fig:images} you see the same
+% graph saved as a raster image (png) compared to a vector graphic
+% image. You might not see the difference but if you zoom-in you will
+% see that the vector image scales.
+
+% \begin{figure}[h]
+%   \centering
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[scale=0.45]{fib.png}
+%     \caption{using raster graphics}
+%   \end{subfigure}%
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[scale=0.45]{fib.pdf}
+%     \caption{using vector graphics.}
+%   \end{subfigure}
+%   \caption{Difference in image formats.}
+%   \label{fig:images}
+% \end{figure}
+
+% An alternative to including a graph produced by a separate program is
+% to describe the graph in \LaTeX. This can be done using the TikZ
+% library. This library is used to create all types of graphics and the
+% learning curve is quite steep. The benefit is that the \LaTeX document
+% becomes self contained and that you are in complete control over the result.
+
+% The data can either be written in the latex source file but better read
+% from a separate file. Reading from a separate file makes it easier to
+% combine the output from a benchmark with the report. If you construct
+% your benchmark to produce a file with the x and y values in columns
+% you can plot them using a simple {\tt \textbackslash addplot}
+% command. If you do changes to your program you simply run the
+% benchmark again and re-compile the \LaTeX file.
+
+% \begin{figure}
+%   \centering
+%   \begin{tikzpicture}
+%     \begin{axis}[
+%       xmin=12, xmax=28, ymin=0, ymax=3500,
+%       xlabel=n, ylabel={time in $\mu s$},
+%       width=8cm, height=6cm]
+%       \addlegendentry{run time fib(n)};
+%       \addplot[] table {fib.dat};
+%     \end{axis}
+
+%   \end{tikzpicture}
+%   \caption{The same graph using TikZ}
+%   \label{fig:tikz}
+% \end{figure}
+
+% The graph in Fig.\ref{fig:tikz} is generated using Tikz and as you can
+% see, I know have the time in "$\mu s$" instead of in "us".
+
