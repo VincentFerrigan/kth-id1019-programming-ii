@@ -49,13 +49,48 @@
 \label{sec:methods}
 
 \subsection*{Literature Study}
-\label{subsec:literature}
+\label{subsec:literaturestudy}
+The pre-recorded lectures on
+\href{https://canvas.kth.se/courses/44911/assignments/syllabus}{''Lambdakalkyl''},
+given by the course examiner, were reviewed.
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
 \subsubsection*{Tools and packages}
 
 \label{subsec:tools}
 \subsubsection*{The overall Work-flow}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
 
 \label{subsec:workflow}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+For example
+\begin{minted}[fontsize=\small]{elixir}
+test "Evaluate 3x/4, where x = 2" do
+  e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:num, 4}}
+  env = %{x: 2}
+  assert Expression.eval(e, env) == {:q, 3, 2}
+end
+\end{minted}
+
 \section*{Result}
 \label{sec:result}
 
@@ -179,4 +214,12 @@
 
 % The graph in Fig.\ref{fig:tikz} is generated using Tikz and as you can
 % see, I know have the time in "$\mu s$" instead of in "us".
+
+%iex(2)> e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+%    {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+%iex(2)> Expression.run(e, %{x: 2, y: 4})
+%Evaluating 3x/2y, where %{y: 4, x: 2}.
+%
+%Result: 3/4
+%:ok
 
