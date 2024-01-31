@@ -39,10 +39,18 @@ defmodule Expression do
   and an environment,`env`, as a mapping of variables to their values.
 
   The given expression and the final simplified evaluation are pretty printed to the console.
+
+  ## Examples
+
+      iex> e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+      iex> Expression.run(e, %{x: 2, y: 4})
+      "Evaluating 3x/2y, where %{x: 2, y: 4}.
+      Result: 3/4"
+      :ok
   """
   @spec run(expr(), map()) :: :ok
   def run(ast, env) do
-    IO.write("Evaluate #{pretty_print(ast)}, \n where #{inspect(env)}.\n\n")
+    IO.write("Evaluating #{pretty_print(ast)}, where #{inspect(env)}.\n")
     IO.write("Result: #{pretty_print(eval(ast, env))}\n")
 
     # TODO replace inspect. Not directly pretty!!
@@ -53,7 +61,14 @@ defmodule Expression do
   Evaluates the given expression based on the provided environment.
   It takes an expression as an abstract syntax tress, `ast`,
   and an environment,`env`, as a mapping of variables to their values.
+
+  ## Examples
+
+      iex> e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+      iex> Expression.eval(e, %{x: 2, y: 4})
+      {:q, 3, 4}
   """
+  #      iex> env = Map.put(Map.new(), :x, 2)
   @spec eval(expr(), map()):: literal()
   def eval({:num, n}, _), do: {:num, n}
   def eval({:var, v}, env), do: {:num, Map.get(env, v)}
@@ -61,7 +76,9 @@ defmodule Expression do
   def eval({:sub, e1, e2}, env), do: subtraction(eval(e1, env), eval(e2, env))
   def eval({:mul, e1, e2}, env), do: multiplication(eval(e1, env), eval(e2, env))
   def eval({:div, e1, e2}, env), do: division(eval(e1, env), eval(e2, env))
+  def eval({:q, a, a}, env), do: eval({:num, 1}, env)
   def eval({:q, a, 1}, env), do: eval({:num, a}, env)
+  def eval({:q, a, a}, env), do: eval({:num, 1}, env)
   def eval({:q, a, b}, env) do
     division(eval({:num, a}, env), eval({:num, b}, env))
   end
@@ -94,6 +111,8 @@ defmodule Expression do
     raise ArgumentError, message: "Attempted to divide by zero."
   end
 
+  defp division({:num, n}, {:num, n}), do: {:num, 1}
+  defp division({:num, n}, {:num, 1}), do: {:num, n}
   defp division({:num, n1}, {:num, n2}) do
     # Simplifies the result by dividing both numerator and denominator by their GCD.
     gcd = Integer.gcd(convert_float_to_int_if_whole(n1), convert_float_to_int_if_whole(n2))
