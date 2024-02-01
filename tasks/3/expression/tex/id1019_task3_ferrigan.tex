@@ -1,0 +1,384 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{
+    Evaluating an expression
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+% \date{\today}
+\date{Spring Term 2023}
+
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+The chief objective of this assignment is to evaluate mathematical expression containing variables.
+The task involves implementing a function
+\mintinline{elixir}{eval/2} that takes an \emph{expression} and an \emph{environment} to evaluate the expression to a
+literal.
+The expressions are represented as tuples with operators like
+\mintinline{elixir}{:add} for addition,
+\mintinline{elixir}{:sub} for subtraction,
+\mintinline{elixir}{:mul} for multiplication, and
+\mintinline{elixir}{:div} for division,
+and literals including integers as
+\mintinline{elixir}{:num}, variables as
+\mintinline{elixir}{:var}, and numbers as
+\mintinline{elixir}{:q}.
+
+This assignment is based on the instruction
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/expression/expression.pdf}{'Evaluating an expression'}
+by course examiner Johan Montelius.
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/3/expression}{Repo Programming II - Expression}% TODO FUNKAR DEN? ÄNDRA NAMN
+\section*{Methods}
+\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+The pre-recorded lectures on
+\href{https://canvas.kth.se/courses/44911/assignments/syllabus}{''Lambdakalkyl''},
+given by the course examiner, were reviewed.
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+\subsubsection*{The overall Work-flow}
+\label{subsec:workflow}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+For example, before creating a helper-function that reduces rational numbers,
+one can first write a test-case.
+As illustrated in the test-example below, the result is expected to be
+$\frac{3}{2}$ rather than $\frac{6}{4}$.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+test "Evaluate 3x/4, where x = 2" do
+  e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:num, 4}}
+  env = %{x: 2}
+  assert Expression.eval(e, env) == {:q, 3, 2}
+end
+\end{minted}
+\section*{Result}
+\label{sec:result}
+Since all
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/3/expression/lib/expression}{code (expression.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/3/expression/test/expression_test.exs}{tests (expression\_test.exs)}
+could be found on GitHub, the author has chosen only to present multiplication and division
+of both integers and rational numbers.
+
+The head function
+\mintinline{elixir}{Expression.run/2}
+evaluates and prints given mathematical expression based on provided environment.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+iex> e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+iex> Expression.run(e, %{x: 2, y: 4})
+Evaluating 3x/2y, where %{x: 2, y: 4}.
+Result: 3/4
+:ok
+\end{minted}
+This function takes a mathematical expression represented in a structured format
+(as defined by the
+\mintinline{elixir}{expr()} type),
+and an environment,
+\mintinline{elixir}{env} as a mapping of variables to their values.
+The given expression and the final simplified evaluation are pretty printed to the console.
+On successful execution, the function returns an
+\mintinline{elixir}{:ok}.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+@spec run(expr(), map()) :: :ok
+def run(ast, env) do
+  IO.write("Evaluating #{pretty_print(ast)}, where #{inspect(env)}.\n")
+  IO.write("Result: #{pretty_print(eval(ast, env))}\n")
+  :ok
+end
+\end{minted}
+As previously mentioned, only a couple of auxiliary functions will be briefly explained.
+\subsubsection*{DSL}
+As in the first assigment, \emph{Taking the Derivative}, the assignment also includes a form of metaprogramming
+i.e. \mintinline{elixir}{@type} definitions creating a small \emph{Domain Specific Language} DSL.
+A DSL is a specialized mini-language created to express ideas, configurations, or instructions in a specific domain
+more efficiently and clearly.
+In this case, the domain is mathematical expressions,
+and our Abstract Syntax Tree (AST) structure is tailored to express these expressions in a specific, structured way.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+@type literal() :: {:num, number()} | {:var, atom() | {:q, number(), number()}}
+
+@type expr() ::   {:add, expr(), expr()} | {:sub, expr(), expr()}
+                | {:mul, expr(), expr()} | {:div, expr(), expr()}
+                | literal()
+\end{minted}
+\subsubsection*{Evaluation}
+In Elixir it is possible to have several definitions of the same function and arity.
+This technique is called function-overloading where and in this case.
+To choose which function to call,
+Elixir pattern matches the parameters.
+(The order of matching is top-down as in regular pattern matching.)
+Both
+\mintinline{elixir}{eval/2} and its helper-functions
+are overloaded.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+@spec eval(expr(), map()):: literal()
+def eval({:num, n}, _), do: {:num, n}
+def eval({:var, v}, env), do: {:num, Map.get(env, v)}
+...etc
+def eval({:mul, e1, e2}, env), do: multiplication(eval(e1, env), eval(e2, env))
+def eval({:div, e1, e2}, env), do: division(eval(e1, env), eval(e2, env))
+def eval({:q, a, a}, env), do: eval({:num, 1}, env)
+def eval({:q, a, 1}, env), do: eval({:num, a}, env)
+def eval({:q, a, a}, env), do: eval({:num, 1}, env)
+def eval({:q, a, b}, env), do: division(eval({:num, a}, env), eval({:num, b}, env))
+\end{minted}
+This is a handy way to parse the given AST.
+So how does one specifically deal with rational numbers?
+For example, multiply two fractions with different denominators
+The program must multiply the numerators and denominators separately:
+$\frac{a}{b} \cdot \frac{c}{d} = \frac{ac}{bd}$
+and then reduce the resulting rational number.
+Here, the program must calculate the greatest common divisor (GCD)
+of the numerator and denominator, and divide both by the GCD.
+\begin{minted}[fontsize=\footnotesize]{elixir}
+# Evaluate given multiplication of two expressoin based on provided enviroment `env`.
+def eval({:mul, e1, e2}, env), do: multiplication(eval(e1, env), eval(e2, env))
+
+# Perform multiplication between two expressions, handling both integers and rational numbers.
+defp multiplication({:q, a, b}, {:q, c, d}), do: division({:num, a * c}, {:num, b * d})
+...etc
+
+# Simplify rational numbers into integers when applicable.
+defp division({:num, n}, {:num, n}), do: {:num, 1}
+defp division({:num, n}, {:num, 1}), do: {:num, n}
+
+# Simplify the result by dividing both numerator and denominator by their GCD.
+defp division({:num, n1}, {:num, n2}) do
+  gcd = Integer.gcd(convert_float_to_int_if_whole(n1), convert_float_to_int_if_whole(n2))
+  {:q, convert_float_to_int_if_whole(n1/gcd), convert_float_to_int_if_whole(n2/gcd)}
+end
+
+# Convert a float to an integer if it's a whole number, otherwise raise an ArgumentError.
+defp convert_float_to_int_if_whole(float) do
+  truncated = trunc(float)
+  if truncated == float do truncated
+  else raise ArgumentError,
+      message: "Input #{float} is not a whole number and cannot be converted to an integer."
+  end
+end
+\end{minted}
+
+\section*{Discussion}
+\label{sec:discussion}
+As mentioned in the authors first report,
+developing the simplification process was then quite tricky.
+The module \mintinline{elixir}{derivative} did not simplify
+all algebraic expressions all the way.
+One issue was applying the quotient rule for exponents.
+\begin{minted}[fontsize=\small]{elixir}
+iex(1)> f = {:div, {:num, 1}, {:mul, {:num, 2}, {:var, :x}}}
+{:div, {:num, 1}, {:mul, {:num, 2}, {:var, :x}}}
+iex(2)> Derivative.run(f, :x, 3)
+The steps taken to find the derivative of function (1/2x),
+at given value of x = 3.
+Derivative: ((0 * 2x) + -((1 * (2 * 1) + 0x))/(2x)^2)
+Simplified: (-2/(2x)^2)
+Calculated: (-2/36.0)
+:ok
+\end{minted}
+With this module, the result $\frac{-2}{36}$ would would have been reduced to $\frac{-1}{18}$.
+\begin{minted}[fontsize=\small]{elixir}
+iex(1)> env = %{x: 3}
+iex(2)> e = {:div, {:num, -2}, {:num, 36}}
+{:div, {:num, -2}, {:num, 36}}
+iex(3)> Expression.run(e, env)
+Evaluating -2/36, where %{x: 3}.
+Result: -1/18
+:ok
+\end{minted}
+\subsubsection*{Error handling}
+How should one handle division by zero appropriately?
+When trying to divide by zero, the author chose to use Elixir's build function
+to raise an error.
+\begin{minted}[fontsize=\small]{elixir}
+defp division(_, {:num, 0}) do
+  raise ArgumentError, message: "Attempted to divide by zero."
+end
+\end{minted}
+Was this an okay approach, or should the solution have been indicating an ''error''
+with an atom followed by \verb|stderr|/\verb|stdout| with the help of \verb|IO|?
+\end{document}
+
+% \begin{longlisting}
+%   \inputminted[
+%       label=Q1-Function,
+%       linenos=true,
+%       bgcolor=lightgray,
+%       firstline=28,
+%       lastline=45,
+% %        frame=single,
+%       fontsize=\footnotesize,
+%   ]{sql}{../../src/db/analytics/analytics.sql}
+%   \caption{
+%     Function for filtering and ordering output-table from view on given year.
+%     }
+%   \label{listing:q1_func}
+% \end{longlisting}
+
+% \begin{minted}{elixir}
+%   def append([], b) do b end
+%   def append([h|t], b) do
+%     [h | append(t, b)]
+%   end  
+% \end{minted}
+
+% If you want to include a program statement in running text you can do this
+% using for example teletype-text: {\tt append([1,2,3],[4,5])}.
+% using for example mintinline: \mintinline{elixir}{append([1,2,3],[3])}
+
+% \begin{table}[h]
+% \begin{center}
+% \begin{tabular}{l|c|c}
+% \textbf{prgm} & \textbf{run time} & \textbf{ratio}\\
+% \hline
+%   dummy      &  115 &     1.0\\
+%   union      &  535 &     4.6\\
+%   tailr      &  420 &     3.6\\
+% \end{tabular}
+% \caption{Union and friends, list of 50000 elements, run time in micro seconds}
+% \label{tab:table1}
+% \end{center}
+% \end{table}
+
+
+% \section*{Graphs}
+
+% Once you start to generate graphs make sure that they are readable and
+% have sensible information on the axes.
+
+% There are many ways to generate graphs but you want to use a way that
+% minimize manual work. My tool over the years has been {\em Gnuplot}
+% and if you do not have a favorite tool you could give it a try. The
+% Gnuplot program is a stand alone program that will generate a
+% graph that you then can include in you report.
+
+% If you work with Gnuplot you should write the commands needed to
+% generate a diagram in a small script. Take a look in the file {\tt
+%   fib.p} and you will see how the diagram in Fig.\ref{fig:images} was
+% created from the data given in {\tt fib.dat} (the {\tt .png} file was
+% generated from {\tt fib.pdf} using the Linux {\tt convert}
+% program found in {\tt imagemagick}).
+
+% When you include graphs you should make sure that the images you
+% include are not raster images (gif, png etc) but a vector image that
+% scales when you zoom-in. In Fig.\ref{fig:images} you see the same
+% graph saved as a raster image (png) compared to a vector graphic
+% image. You might not see the difference but if you zoom-in you will
+% see that the vector image scales.
+
+% \begin{figure}[h]
+%   \centering
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[scale=0.45]{fib.png}
+%     \caption{using raster graphics}
+%   \end{subfigure}%
+%   \begin{subfigure}{.5\textwidth}
+%     \centering
+%     \includegraphics[scale=0.45]{fib.pdf}
+%     \caption{using vector graphics.}
+%   \end{subfigure}
+%   \caption{Difference in image formats.}
+%   \label{fig:images}
+% \end{figure}
+
+% An alternative to including a graph produced by a separate program is
+% to describe the graph in \LaTeX. This can be done using the TikZ
+% library. This library is used to create all types of graphics and the
+% learning curve is quite steep. The benefit is that the \LaTeX document
+% becomes self contained and that you are in complete control over the result.
+
+% The data can either be written in the latex source file but better read
+% from a separate file. Reading from a separate file makes it easier to
+% combine the output from a benchmark with the report. If you construct
+% your benchmark to produce a file with the x and y values in columns
+% you can plot them using a simple {\tt \textbackslash addplot}
+% command. If you do changes to your program you simply run the
+% benchmark again and re-compile the \LaTeX file.
+
+% \begin{figure}
+%   \centering
+%   \begin{tikzpicture}
+%     \begin{axis}[
+%       xmin=12, xmax=28, ymin=0, ymax=3500,
+%       xlabel=n, ylabel={time in $\mu s$},
+%       width=8cm, height=6cm]
+%       \addlegendentry{run time fib(n)};
+%       \addplot[] table {fib.dat};
+%     \end{axis}
+
+%   \end{tikzpicture}
+%   \caption{The same graph using TikZ}
+%   \label{fig:tikz}
+% \end{figure}
+
+% The graph in Fig.\ref{fig:tikz} is generated using Tikz and as you can
+% see, I know have the time in "$\mu s$" instead of in "us".
+
+%iex(2)> e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+%    {:div, {:mul, {:num, 3}, {:var, :x}}, {:mul, {:num, 2}, {:var, :y}}}
+%iex(2)> Expression.run(e, %{x: 2, y: 4})
+%Evaluating 3x/2y, where %{y: 4, x: 2}.
+%
+%Result: 3/4
+%:ok
+
