@@ -54,8 +54,8 @@ defmodule Reduce do
   """
   @spec map([A], (A -> B)) :: [B]
   def map([], _func), do: []
-  def map([head | tail], func) do
-    [func.(head) | map(tail, func)]
+  def map([x | xs], func) do
+    [func.(x) | map(xs, func)]
   end
 
   # SIMPLE REDUCE FUNCTIONS
@@ -131,7 +131,7 @@ defmodule Reduce do
       6
 
   """
-  @spec reduce([A], B, (A -> B)) :: B
+  @spec reduce([A], B, (A, B -> B)) :: B
   def reduce([], acc, _func), do: acc
   def reduce([x | xs], acc, func) do
     reduce(xs, func.(x, acc), func)
@@ -196,11 +196,11 @@ defmodule Reduce do
   """
   @spec filter([A], (A -> boolean)) :: [A]
   def filter([], _func), do: []
-  def filter([head | tail], func) do
-    if func.(head) do
-      [head | filter(tail, func)]
+  def filter([x | xs], func) do
+    if func.(x) do
+      [x | filter(xs, func)]
     else
-      filter(tail, func)
+      filter(xs, func)
     end
   end
 
