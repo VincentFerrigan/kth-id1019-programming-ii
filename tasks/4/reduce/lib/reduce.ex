@@ -131,10 +131,10 @@ defmodule Reduce do
       6
 
   """
-  @spec reduce([A], [B], (A -> B)) :: [B]
+  @spec reduce([A], B, (A -> B)) :: B
   def reduce([], acc, _func), do: acc
   def reduce([x | xs], acc, func) do
-    reduce(xs, func.(acc, x), func)
+    reduce(xs, func.(x, acc), func)
   end
 
   # FILTER FUNCTIONS
