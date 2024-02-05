@@ -1,28 +1,28 @@
 defmodule Reduce do
   @moduledoc """
-  This Elixir module embodies the essence of functional programming
-  by offering a comprehensive suite of list manipulation operations.
-  It is meticulously designed to facilitate both elementary and advanced
-  operations on lists of integers, encapsulating the principles of mapping,
+  Higher-Order List Functions
+  This Elixir module is an introduction to high-order functions
+  that manipulate lists.
+
+  It is designed to facilitate both elementary and advanced operations
+  on lists of integers, encapsulating the principles of mapping,
   reduction, and filtering.
 
   Part 1 of the module introduces foundational map functions that allow for
   the transformation of list elements through incrementing, decrementing,
   multiplication, and modulo operations.
   It progresses to illustrate simple and tail-recursive reduction techniques,
-  adeptly calculating the length, sum, and product of lists,
-  showcasing efficiency and elegance in handling list accumulations.
+  for calculating the length, sum, and product of lists,
+  showcasing handling list accumulations.
 
-  Part 2 elevates the functional programming paradigm by incorporating
-  generic versions of map, reduce, and filter operations.
-  These generic functions exemplify the power of higher-order functions,
+  Part 2 incorporates generic versions of map, reduce, and filter operations.
+  These generic functions exemplify higher-order functions,
   enabling dynamic operation application over lists based on passed-in
   predicates or transformations.
 
-  The module culminates in demonstrating function composition through a
-  practical example that seamlessly combines filtering, mapping,
-  and reduction to solve a complex problem, illustrating the module's
-  capability to compose operations elegantly.
+  The module also demonstrates function composition through a
+  practical example that combines filtering, mapping,
+  and reduction through piping.
 
   This module serves as both a toolkit for practical list manipulation
   tasks and a pedagogical resource for understanding and applying
