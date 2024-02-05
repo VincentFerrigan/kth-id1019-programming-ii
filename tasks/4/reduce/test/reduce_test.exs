@@ -105,19 +105,36 @@ defmodule ReduceTest do
 
     test "Return even numbers", test_data do
       assert Reduce.filter_even(test_data.list) == test_data.even_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 2) == 0 end) == test_data.even_list
+      assert Reduce.filter(test_data.list, &rem(&1, 2) == 0) == test_data.even_list
     end
 
     test "Return odd numbers", test_data do
       assert Reduce.filter_odd(test_data.list) == test_data.odd_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 2) != 0 end) == test_data.odd_list
+      assert Reduce.filter(test_data.list, &rem(&1, 2) != 0) == test_data.odd_list
     end
 
     test "Return all elements divisible by 3 numbers", test_data do
       assert Reduce.filter_div(test_data.list, 3) == test_data.div_by_3_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 3) == 0 end) == test_data.div_by_3_list
+      assert Reduce.filter(test_data.list, &rem(&1, 3) == 0) == test_data.div_by_3_list
     end
   end
 
+  describe "Test piping, take a list of integers
+and returns the sum of the square of all values less than n" do
+    test "Piping step by step" do
+    n = 8
+    list = [1,2,3,4,5,6,7,8,9]
+    exp_result = 1*1+2*2+3*3+4*4+5*5+6*6+7*7
+    test_result = list |> Reduce.filter(&(&1 < n)) |> Reduce.map(&(&1*&1)) |> Reduce.reduce(0, fn x, acc -> x + acc end)
+    assert test_result == exp_result
+    end
 
+    test "Test the func that pipes" do
+      n = 8
+      list = [1,2,3,4,5,6,7,8,9]
+      exp_result = 1*1+2*2+3*3+4*4+5*5+6*6+7*7
+      test_result = Reduce.sum_of_squares_below(list, n)
+      assert test_result == exp_result
+    end
+  end
 end
