@@ -56,7 +56,6 @@ defmodule Reduce do
   def map_mul([x|xs], n), do: [x*n|map_mul(xs, n)]
 
   @doc """
-    @doc """
   Applies the remainder operation on each element in the list with `n`.
   """
   @spec map_rem([integer], integer) :: [integer]
