@@ -1,0 +1,173 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{
+    Reduce and friends
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+% \date{\today}
+\date{Spring Term 2023}
+
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+The chief objective of the assignment is to explore the significance and utility
+of higher-order functions.
+
+Part one consists of tackling list manipulations through
+''traditional methods'' to discover/identify and discuss underlying patterns.
+Here, both regular and tail recursive solutions will be demonstrated and compared.
+
+The second part re-implements these operations by using higher-order functions
+i.e. implementing generic solutions.
+This will help the student to understand and apply the three main patterns of
+higher-order functions: map, reduce, and filter.
+
+The final task involves the use of the pipe operator \mintinline{elixir}{|>}
+to streamline
+function calls and improve code readability.
+The pipe operator is the main operator for function composition in Elixir.
+
+This assignment is based on the instruction
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/reduce/reduce.pdf}{'Reduce and friends'}
+by course examiner Johan Montelius.
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce}{Repo Programming II - Reduce}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}
+\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+The pre-recorded lectures on
+\href{https://canvas.kth.se/courses/44911/assignments/syllabus}{''v6 Högre ordningens funktioner''},
+given by the course examiner, were reviewed.
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+
+\subsubsection*{The overall Work-flow}
+\label{subsec:workflow}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+....
+%TODO HÄR ÄR DU  NU::::::::
+%TODO HÄR ÄR DU  NU::::::::
+%TODO HÄR ÄR DU  NU::::::::
+%TODO HÄR ÄR DU  NU::::::::
+
+% %TODO exempel på ett test
+%For example, before creating a helper-function that reduces rational numbers,
+%one can first write a test-case.
+%As illustrated in the test-example below, the result is expected to be
+%$\frac{3}{2}$ rather than $\frac{6}{4}$.
+%\begin{minted}[fontsize=\footnotesize]{elixir}
+%test "Evaluate 3x/4, where x = 2" do
+%  e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:num, 4}}
+%  env = %{x: 2}
+%  assert Expression.eval(e, env) == {:q, 3, 2}
+%end
+%\end{minted}
+
+% TODO SKRIV OM HUR DU DELADE UPP KODEN ETC....??
+\section*{Result}
+\label{sec:result}
+Since all
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/lib/reduce.ex}{code (lib/reduce.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/test/reduce_test.exs}{tests (test/reduce\_test.exs)}
+could be found on GitHub, the author has chosen only to % TODO.........
+
+%The head function
+%\mintinline{elixir}{}
+%......
+%\begin{minted}[fontsize=\footnotesize]{elixir}
+%iex>
+%iex>
+%
+%
+%:ok
+%\end{minted}
+%This function .....
+
+\subsection*{Part ONE}
+\label{subsec:res-part1}
+
+\subsubsection*{Part Two}
+\label{subsec:res-part2}
+
+\section*{Discussion}
+\label{sec:discussion}
+
+\subsection*{Part ONE}
+\label{subsec:dis-part1}
+
+\subsubsection*{Part Two}
+\label{subsec:dis-part2}
+\end{document}
+
+% regular recursion involves functions that make their recursive call but still
+% have some computation to do after the call returns, potentially leading to
+% larger memory usage due to the call stack. Tail recursion, on the other hand,
+% is a specific form of recursion where the recursive call is the last operation
+% in the function. This allows for optimizations such as tail call optimization
+% (TCO), where the compiler can reuse the current function's stack frame for the
+% recursive call, significantly reducing memory usage and preventing stack
+% overflow errors. Tail recursion is therefore considered more efficient and
+% performant for certain algorithms, especially in languages and environments
+% that support TCO.
