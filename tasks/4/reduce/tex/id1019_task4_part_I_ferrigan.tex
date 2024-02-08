@@ -97,8 +97,8 @@ Quick-fixes and editing was, however, done in \emph{Vim}.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
 The report was written in \LaTeX.
 
-\subsubsection*{The overall Work-flow}
-\label{subsec:workflow}
+\subsubsection*{Test Driven Development}
+\label{subsec:ttd}
 The development was an iterative approach with ''trail and errors''.
 The author practiced
 \href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
@@ -117,13 +117,47 @@ and finally refactor the code.
 %one can first write a test-case.
 %As illustrated in the test-example below, the result is expected to be
 %$\frac{3}{2}$ rather than $\frac{6}{4}$.
-%\begin{minted}[fontsize=\footnotesize]{elixir}
-%test "Evaluate 3x/4, where x = 2" do
-%  e = {:div, {:mul, {:num, 3}, {:var, :x}}, {:num, 4}}
-%  env = %{x: 2}
-%  assert Expression.eval(e, env) == {:q, 3, 2}
-%end
-%\end{minted}
+\begin{minted}[fontsize=\footnotesize]{elixir}
+  # REDUCE
+  describe "Testing Reduce Functions" do
+    test "Return length of list using simple recursion" do
+      assert Reduce.simple_reduce_length([1,2,3,4]) == 4
+    end
+
+    test "Return length of list using Tail Recursion with Accumulators" do
+      assert Reduce.acc_reduce_length([1,2,3,4]) == 4
+    end
+
+    test "Return sum of list using simple recursion" do
+      assert Reduce.simple_reduce_sum([1,2,3,4]) == 1+2+3+4
+    end
+
+    test "Return sum of list using Tail Recursion with Accumulators" do
+      assert Reduce.acc_reduce_prod([1,2,3,4]) == 1*2*3*4
+    end
+
+    test "Return product of list using simple recursion" do
+      assert Reduce.simple_reduce_prod([1,2,3,4]) == 1*2*3*4
+    end
+
+    test "Return product of list using Tail Recursion with Accumulators" do
+      assert Reduce.acc_reduce_sum([1,2,3,4]) == 1+2+3+4
+    end
+
+    test "Empty sum" do
+      assert Reduce.simple_reduce_sum([]) == 0
+      assert Reduce.acc_reduce_sum([]) == 0
+    end
+
+    test "Empty product" do
+      assert Reduce.simple_reduce_prod([]) == 1
+      assert Reduce.acc_reduce_prod([]) == 1
+    end
+  end
+\end{minted}
+
+\subsubsection*{The overall Work-flow}
+\label{subsec:workflow}
 
 % TODO SKRIV OM HUR DU DELADE UPP KODEN ETC....??
 \section*{Result}
