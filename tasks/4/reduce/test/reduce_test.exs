@@ -24,20 +24,20 @@ defmodule ReduceTest do
       assert Reduce.acc_reduce_length([1,2,3,4])    == 4
 
     test "Return sum of non-empty list", do:
-      assert Reduce.simple_reduce_sum([1,2,3,4]) == 1+2+3+4
-      assert Reduce.acc_reduce_sum([1,2,3,4])    == 1+2+3+4
+      assert Reduce.simple_reduce_sum([1,2,3,4])    == 1+2+3+4
+      assert Reduce.acc_reduce_sum([1,2,3,4])       == 1+2+3+4
 
     test "Return product of non-empty list", do:
-      assert Reduce.simple_reduce_prod([1,2,3,4]) == 1*2*3*4
-      assert Reduce.acc_reduce_prod([1,2,3,4])    == 1*2*3*4
+      assert Reduce.simple_reduce_prod([1,2,3,4])   == 1*2*3*4
+      assert Reduce.acc_reduce_prod([1,2,3,4])      == 1*2*3*4
 
     test "Empty sum", do:
-      assert Reduce.simple_reduce_sum([]) == 0
-      assert Reduce.acc_reduce_sum([])    == 0
+      assert Reduce.simple_reduce_sum([])           == 0
+      assert Reduce.acc_reduce_sum([])              == 0
 
     test "Empty product", do:
-      assert Reduce.simple_reduce_prod([]) == 1
-      assert Reduce.acc_reduce_prod([])    == 1
+      assert Reduce.simple_reduce_prod([])          == 1
+      assert Reduce.acc_reduce_prod([])             == 1
   end
 
   # FILTER
