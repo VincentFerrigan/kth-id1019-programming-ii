@@ -51,31 +51,28 @@
 \label{sec:introduction}
 The chief objective of the assignment is to explore the significance and utility
 of \emph{higher-order functions}.
-
 Part one consists of tackling list manipulations through
 ''traditional methods''.
 The purpose of this is to discover underlying patterns.
 Here, both regular and tail recursive solutions will be both
 demonstrated and compared.
-
 The second part re-implements these operations by using higher-order functions,
 i.e.\ implementing generic solutions.
-Here, \emph{anonymous functions} are treated as \emph{first-class citizens}.
-This will help students understand and apply the three main patterns of
-higher-order functions: \emph{map}, \emph{reduce}, and \emph{filter}.
-
-The final task involves the use of the pipe operator
-\mintinline{elixir}{|>}
-to streamline
-function calls and improve code readability.
-The pipe operator is the main operator for function composition in Elixir.
+%Here, \emph{anonymous functions} are treated as \emph{first-class citizens}.
+%This will help students understand and apply the three main patterns of
+%higher-order functions: \emph{map}, \emph{reduce}, and \emph{filter}.
+%
+%The final task involves the use of the pipe operator
+%\mintinline{elixir}{|>}
+%to streamline
+%function calls and improve code readability.
+%The pipe operator is the main operator for function composition in Elixir.
 
 This assignment is based on the instruction
 \href{https://people.kth.se/~johanmon/courses/id1019/seminars/reduce/reduce.pdf}{'Reduce and friends'}
 by course examiner Johan Montelius.
 The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce}{Repo Programming II - Reduce}% TODO FUNKAR DEN? ÄNDRA NAMN
-
 \section*{Methods}
 \label{sec:methods}
 \subsection*{Literature Study}
@@ -93,7 +90,6 @@ The author also relied on textbooks found on
 \href{https://learning.oreilly.com}{O'Reilly Media},
 especially Brute Tate's
 \href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
-
 \subsubsection*{Tools and packages}
 \label{subsec:tools}
 All code was written in \emph{IntelliJ IDEA}.
@@ -101,7 +97,6 @@ Quick-fixes and editing was, however, done in \emph{Vim}.
 \emph{GIT} and \emph{GitHub} were used for version control.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
 The report was written in \LaTeX.
-
 \subsubsection*{Test Driven Development}
 \label{subsec:ttd}
 The development was an iterative approach with ''trail and errors''.
@@ -117,17 +112,11 @@ The product of an empty list should be one (the empty product), since one is the
 The sum of an empty list must also result in its identity element, which is zero.
 \inputminted[
     label=REDUCE TESTS,
-%        linenos=true,
-% TODO: Ska jag köra samtliga? dvs 5-50?
-%    firstline=5,
-%    lastline=50,
     firstline=19,
     lastline=39,
     xleftmargin=-3mm,  % Adjust this value as needed
-%        frame=single,
     fontsize=\footnotesize,
 ]{elixir}{../test/reduce_test.exs}
-% TODO SKRIV OM HUR DU DELADE UPP KODEN ETC....??
 \section*{Result}
 \label{sec:result}
 The ten list operations were divided into the following three underlying patterns:
@@ -141,7 +130,7 @@ Since all
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/lib/reduce.ex}{code (lib/reduce.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/test/reduce_test.exs}{tests (test/reduce\_test.exs)}
 could be found on GitHub, the author has chosen to only present a few of the functions.
-\subsubsection*{map}
+\subsubsection*{Map}
 Recursion typically involves two main components:
 a base case and recursive cases.
 The base case is the condition that ends the recursion
@@ -161,7 +150,7 @@ fontsize=\footnotesize,
 The function
 \mintinline{elixir}{map:mul/2} multiplies each element in the list by
 \mintinline{elixir}{n}.
-\subsubsection*{reduce}
+\subsubsection*{Reduce}
 Both function
 \mintinline{elixir}{simple_reduce_prod/1} and
 \mintinline{elixir}{acc_reduce_prod/1} calculate the product of all elements in the list
@@ -175,18 +164,19 @@ Both function
 \inputminted[
     label=acc reduce,
     firstline=111,
-    lastline=116,
+    lastline=117,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/reduce.ex}
 The difference is that the latter is tail-recursive,
 with the subsequent helper function
-\mintinline{elixir}{acc_reduce_prod/2}.
+\\\mintinline{elixir}{acc_reduce_prod/2}.
 These functions are defined with
 \mintinline{elixir}{defp}, making them private,
 which is why they serve as helpers to the public-facing wrapper function
-\mintinline{elixir}{acc_reduce:prod/1}.
+\\\mintinline{elixir}{acc_reduce:prod/1}.
 The first
+
 \mintinline{elixir}{acc_reduce_prod([], acc)},
 defines the base case for the recursion.
 When the list is empty, it returns the accumulated value,
@@ -200,7 +190,7 @@ multiplying it with the accumulator
 and then recursively calling itself with the tail of the list
 \mintinline{elixir}{xs} and the new accumulated value
 \mintinline{elixir}{acc * x}.
-\subsubsection*{filter}
+\subsubsection*{Filter}
 The wrapper function
 \mintinline{elixir}{filter_odd/1}
 with its helper function
@@ -216,31 +206,11 @@ tail recursion to filter odd numbers from a list.
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/reduce.ex}
-
-%The head function
-%\mintinline{elixir}{}
-%......
-%\begin{minted}[fontsize=\footnotesize]{elixir}
-%iex>
-%iex>
-%
-%
-%:ok
-%\end{minted}
-%This function .....
-
-\subsection*{Part ONE}
-\label{subsec:res-part1}
-
-\subsubsection*{Part Two}
-\label{subsec:res-part2}
-
 \section*{Discussion}
 \label{sec:discussion}
 The recursive calls in the helper functions above are structured in such a way
 (tail calls) that Elixir (or the Erlang VM, BEAM, it runs on)
 can optimize them.
-
 Regular recursion, exemplified above in
 \mintinline{elixir}{simple_reduce_prod/1}),
 involves functions that make their recursive call but still
@@ -249,8 +219,8 @@ have some computation to do after the call returns
 larger memory usage due to the call stack.
 
 Tail recursion, on the other hand, as exemplified above in both
-\mintinline{elixir}{acc_reduce_prod/1}) and
-\mintinline{elixir}{filter_odd/1}),
+\\\mintinline{elixir}{acc_reduce_prod/1} and
+\mintinline{elixir}{filter_odd/1},
 is a specific form of recursion where the recursive call is the last operation
 in the function.
 This allows for optimizations such as tail call optimization
@@ -272,3 +242,16 @@ that support TCO.
 % overflow errors. Tail recursion is therefore considered more efficient and
 % performant for certain algorithms, especially in languages and environments
 % that support TCO.
+
+%The head function
+%\mintinline{elixir}{}
+%......
+%\begin{minted}[fontsize=\footnotesize]{elixir}
+%iex>
+%iex>
+%
+%
+%:ok
+%\end{minted}
+%This function .....
+
