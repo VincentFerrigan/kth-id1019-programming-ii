@@ -52,8 +52,8 @@ defmodule Reduce do
   Multiplies each element in the list by `n`.
   """
   @spec map_mul([integer], integer) :: [integer]
-  def map_mul([], _n), do: []
-  def map_mul([x|xs], n), do: [x*n|map_mul(xs, n)]
+  def map_mul([], _n), do: []                       # Base case
+  def map_mul([x|xs], n), do: [x*n|map_mul(xs, n)]  # Recursive case
 
   @doc """
   Applies the remainder operation on each element in the list with `n`.
@@ -83,8 +83,8 @@ defmodule Reduce do
   Calculates the product of all elements in the list.
   """
   @spec simple_reduce_prod([integer]) :: integer
-  def simple_reduce_prod([]), do: 1
-  def simple_reduce_prod([x|xs]), do: x * simple_reduce_prod(xs)
+  def simple_reduce_prod([]), do: 1                               # Base case
+  def simple_reduce_prod([x|xs]), do: x * simple_reduce_prod(xs)  # Recursive case
 
   # TAIL RECURSIVE REDUCE FUNCTIONS
   # Tail-recursive reduction functions with an accumulator for efficient length, sum, and product calculations.
@@ -109,11 +109,11 @@ defmodule Reduce do
   Tail-recursive approach to calculate the product of elements in the list.
   """
   @spec acc_reduce_prod([integer]) :: integer
-  def acc_reduce_prod(xs), do: acc_reduce_prod(xs, 1)
+  def acc_reduce_prod(xs), do: acc_reduce_prod(xs, 1)                 # Wrapper function
 
   @spec acc_reduce_prod([integer], integer) :: integer
-  defp acc_reduce_prod([], acc), do: acc
-  defp acc_reduce_prod([x|xs], acc), do: acc_reduce_prod(xs, acc * x)
+  defp acc_reduce_prod([], acc), do: acc                              # Base case
+  defp acc_reduce_prod([x|xs], acc), do: acc_reduce_prod(xs, acc * x) # Recursive case
 
   # FILTER FUNCTIONS
   # Filter functions to select even, odd, and divisible numbers from a list.
