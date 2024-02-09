@@ -198,7 +198,6 @@ with its helper function
 \mintinline{elixir}{filter_odd/2}
 uses
 tail recursion to filter odd numbers from a list.
-\mintinline{elixir}{filter_odd/1}
 % TODO HÄR ÄR DU
 \inputminted[
     label=filter,
@@ -207,6 +206,12 @@ tail recursion to filter odd numbers from a list.
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/reduce.ex}
+The helper function uses an accumulator (acc) to collect the results.
+Since elements are prepended to the accumulator,
+the resulting list would be in reverse order compared to the original list.
+To preserve the original element order,
+\mintinline{elixir}{Enum.reverse(acc)} is called before returning the final
+result.
 \section*{Discussion}
 \label{sec:discussion}
 The recursive calls in the helper functions above are structured in such a way
