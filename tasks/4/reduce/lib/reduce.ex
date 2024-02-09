@@ -254,7 +254,7 @@ defmodule Reduce do
   def sum_of_squares_below(list, n) do
     list
     |> Reduce.filter(&(&1 < n)) # filter values less than n
-    |> Reduce.map(&(&1 * &1))     # square each value
-    |> Reduce.reduce(0, fn x, acc -> x + acc end) # sum them
+    |> Reduce.map(&(&1 * &1))   # square each value
+    |> Reduce.reduce(0, &(+/2)) # sum them
   end
 end
