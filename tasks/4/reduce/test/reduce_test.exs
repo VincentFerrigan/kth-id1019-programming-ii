@@ -2,7 +2,6 @@ defmodule ReduceTest do
   use ExUnit.Case
   doctest Reduce
 
-  # MAP
   describe "Testing Map Functions" do
     test "Increment by given value", do:
       assert Reduce.map_inc([1,2,3,4,5], 5) == [1+5,2+5,3+5,4+5,5+5]
@@ -17,7 +16,6 @@ defmodule ReduceTest do
       assert Reduce.map_rem([1,2,3,4,5], 5) == [1,2,3,4,0]
   end
 
-  # REDUCE
   describe "Testing Reduce Functions" do
     test "Return length non-empty of list", do:
       assert Reduce.simple_reduce_length([1,2,3,4]) == 4
@@ -40,7 +38,6 @@ defmodule ReduceTest do
       assert Reduce.acc_reduce_prod([])             == 1
   end
 
-  # FILTER
   describe "Testing filter Functions" do
     test "Return even numbers", do:
       assert Reduce.filter_even([0,1,2,3,4,5,6]) == [0,2,4,6]
