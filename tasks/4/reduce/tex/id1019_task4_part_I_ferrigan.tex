@@ -37,6 +37,7 @@
 
 \title{
     Reduce and friends
+    \\Part One
 \\\small{Programmering II, ID1019, VT24 P1}
 }
 \author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
@@ -49,18 +50,22 @@
 \section*{Introduction}
 \label{sec:introduction}
 The chief objective of the assignment is to explore the significance and utility
-of higher-order functions.
+of \emph{higher-order functions}.
 
 Part one consists of tackling list manipulations through
-''traditional methods'' to discover/identify and discuss underlying patterns.
-Here, both regular and tail recursive solutions will be demonstrated and compared.
+''traditional methods''.
+The purpose of this is to discover underlying patterns.
+Here, both regular and tail recursive solutions will be both
+demonstrated and compared.
 
-The second part re-implements these operations by using higher-order functions
-i.e. implementing generic solutions.
-This will help the student to understand and apply the three main patterns of
-higher-order functions: map, reduce, and filter.
+The second part re-implements these operations by using higher-order functions,
+i.e.\ implementing generic solutions.
+Here, \emph{anonymous functions} are treated as \emph{first-class citizens}.
+This will help students understand and apply the three main patterns of
+higher-order functions: \emph{map}, \emph{reduce}, and \emph{filter}.
 
-The final task involves the use of the pipe operator \mintinline{elixir}{|>}
+The final task involves the use of the pipe operator
+\mintinline{elixir}{|>}
 to streamline
 function calls and improve code readability.
 The pipe operator is the main operator for function composition in Elixir.
@@ -106,55 +111,20 @@ The author practiced
 The basic steps follow the \emph{Red-Green-Refactor cycle};
 writing failing tests (Red), make them pass (Green),
 and finally refactor the code.
-....
-%TODO HÄR ÄR DU  NU::::::::
-%TODO HÄR ÄR DU  NU::::::::
-%TODO HÄR ÄR DU  NU::::::::
-%TODO HÄR ÄR DU  NU::::::::
-
-% %TODO exempel på ett test
-%For example, before creating a helper-function that reduces rational numbers,
-%one can first write a test-case.
-%As illustrated in the test-example below, the result is expected to be
-%$\frac{3}{2}$ rather than $\frac{6}{4}$.
-\begin{minted}[fontsize=\footnotesize]{elixir}
-  # REDUCE
-  describe "Testing Reduce Functions" do
-    test "Return length of list using simple recursion" do
-      assert Reduce.simple_reduce_length([1,2,3,4]) == 4
-    end
-
-    test "Return length of list using Tail Recursion with Accumulators" do
-      assert Reduce.acc_reduce_length([1,2,3,4]) == 4
-    end
-
-    test "Return sum of list using simple recursion" do
-      assert Reduce.simple_reduce_sum([1,2,3,4]) == 1+2+3+4
-    end
-
-    test "Return sum of list using Tail Recursion with Accumulators" do
-      assert Reduce.acc_reduce_prod([1,2,3,4]) == 1*2*3*4
-    end
-
-    test "Return product of list using simple recursion" do
-      assert Reduce.simple_reduce_prod([1,2,3,4]) == 1*2*3*4
-    end
-
-    test "Return product of list using Tail Recursion with Accumulators" do
-      assert Reduce.acc_reduce_sum([1,2,3,4]) == 1+2+3+4
-    end
-
-    test "Empty sum" do
-      assert Reduce.simple_reduce_sum([]) == 0
-      assert Reduce.acc_reduce_sum([]) == 0
-    end
-
-    test "Empty product" do
-      assert Reduce.simple_reduce_prod([]) == 1
-      assert Reduce.acc_reduce_prod([]) == 1
-    end
-  end
-\end{minted}
+For example, before creating all functions that fall under the ''reduce-pattern'',
+one can first write a couple of test cases, as illustrated in the test-examples below.
+The product of an empty list should be one (the empty product), since one is the identity element for multiplication.
+The sum of an empty list must also result in its identity element, which is zero.
+\inputminted[
+    label=REDUCE TESTS,
+%        linenos=true,
+    firstline=21,
+    lastline=41,
+    xleftmargin=-3mm,  % Adjust this value as needed
+%        frame=single,
+    fontsize=\footnotesize,
+]{elixir}{../test/reduce_test.exs}
+As one can read from the subsection ~\autoref{subsec:ttd} above
 
 \subsubsection*{The overall Work-flow}
 \label{subsec:workflow}
