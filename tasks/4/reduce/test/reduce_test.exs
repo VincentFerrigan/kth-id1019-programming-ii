@@ -2,122 +2,96 @@ defmodule ReduceTest do
   use ExUnit.Case
   doctest Reduce
 
-  # MAP
   describe "Testing Map Functions" do
-    setup do
-      [
-        list: [1,2,3,4,5],
-        value: 5,
-        inc5: [1+5, 2+5, 3+5, 4+5, 5+5],
-        dec5: [1-5, 2-5, 3-5, 4-5, 5-5],
-        mul5: [1*5, 2*5, 3*5, 4*5, 5*5],
-        rem5: [1, 2, 3, 4, 0],
-      ]
-    end
+    test "Increment by given value", do:
+      assert Reduce.map_inc([1,2,3,4,5], 5) == [1+5,2+5,3+5,4+5,5+5]
 
-    test "Increment by given value", test_data do
-      assert Reduce.map_inc(test_data.list, test_data.value) == test_data.inc5
-      assert Reduce.map(test_data.list, fn x -> x + test_data.value end) == test_data.inc5
-    end
+    test "Decrement by given value", do:
+      assert Reduce.map_dec([1,2,3,4,5], 5) == [1-5,2-5,3-5,4-5,5-5]
 
-    test "Decrement by given value", test_data do
-      assert Reduce.map_dec(test_data.list, test_data.value) == test_data.dec5
-      assert Reduce.map(test_data.list, fn x -> x - test_data.value end) == test_data.dec5
-    end
+    test "Multiply by given value", do:
+      assert Reduce.map_mul([1,2,3,4,5], 5) == [1*5,2*5,3*5,4*5,5*5]
 
-    test "Multiply by given value", test_data do
-      assert Reduce.map_mul(test_data.list, test_data.value) == test_data.mul5
-      assert Reduce.map(test_data.list, fn x -> x * test_data.value end) == test_data.mul5
-    end
-
-    test "Reminder by given value", test_data do
-      assert Reduce.map_rem(test_data.list, test_data.value) == test_data.rem5
-      assert Reduce.map(test_data.list, &rem(&1,test_data.value))
-    end
-
+    test "Reminder by given value", do:
+      assert Reduce.map_rem([1,2,3,4,5], 5) == [1,2,3,4,0]
   end
 
-  # REDUCE
   describe "Testing Reduce Functions" do
-    setup do
-      [
-        list: [1,2,3,4],
-        len: 4,
-        total_sum: 10,
-        total_prod: 1*2*3*4,
-        empty_prod: 1,
-        empty_sum: 0,
-      ]
-    end
+    test "Return length non-empty of list", do:
+      assert Reduce.simple_reduce_length([1,2,3,4]) == 4
+      assert Reduce.acc_reduce_length([1,2,3,4])    == 4
 
-    test "Return length of list using simple recursion", test_data do
-      assert Reduce.simple_reduce_length(test_data.list) == test_data.len
-    end
+    test "Return sum of non-empty list", do:
+      assert Reduce.simple_reduce_sum([1,2,3,4])    == 1+2+3+4
+      assert Reduce.acc_reduce_sum([1,2,3,4])       == 1+2+3+4
 
-    test "Return length of list using Tail Recursion with Accumulators", test_data do
-      assert Reduce.acc_reduce_length(test_data.list) == test_data.len
-      assert Reduce.reduce(test_data.list, 0, fn _elem, acc -> acc + 1 end) == test_data.len
-    end
+    test "Return product of non-empty list", do:
+      assert Reduce.simple_reduce_prod([1,2,3,4])   == 1*2*3*4
+      assert Reduce.acc_reduce_prod([1,2,3,4])      == 1*2*3*4
 
-    test "Return sum of list using simple recursion", test_data do
-      assert Reduce.simple_reduce_sum(test_data.list) == test_data.total_sum
-    end
+    test "Empty sum", do:
+      assert Reduce.simple_reduce_sum([])           == 0
+      assert Reduce.acc_reduce_sum([])              == 0
 
-    test "Return sum of list using Tail Recursion with Accumulators", test_data do
-      assert Reduce.acc_reduce_prod(test_data.list) == test_data.total_prod
-      assert Reduce.reduce(test_data.list, 0, fn (x, acc) -> x + acc end) == test_data.total_sum
-    end
-
-    test "Return product of list using simple recursion", test_data do
-      assert Reduce.simple_reduce_prod(test_data.list) == test_data.total_prod
-    end
-
-    test "Return product of list using Tail Recursion with Accumulators", test_data do
-      assert Reduce.acc_reduce_sum(test_data.list) == test_data.total_sum
-      assert Reduce.reduce(test_data.list, 1, fn (x, acc) -> x * acc end) == test_data.total_prod
-    end
-
-    test "Empty sum", test_data do
-      assert Reduce.simple_reduce_sum([]) == test_data.empty_sum
-      assert Reduce.acc_reduce_sum([]) == test_data.empty_sum
-      assert Reduce.reduce([], 0, fn (x, acc) -> x + acc end) == test_data.empty_sum
-    end
-
-    test "Empty product", test_data do
-      assert Reduce.simple_reduce_prod([]) == test_data.empty_prod
-      assert Reduce.acc_reduce_prod([]) == test_data.empty_prod
-      assert Reduce.reduce([], 1, fn (x, acc) -> x * acc end) == test_data.empty_prod
-    end
-
+    test "Empty product", do:
+      assert Reduce.simple_reduce_prod([])          == 1
+      assert Reduce.acc_reduce_prod([])             == 1
   end
 
-  # FILTER
   describe "Testing filter Functions" do
-    setup do
-      [
-        list: [0,1,2,3,4,5,6],
-        dividor: 3,
-        even_list: [0,2,4,6],
-        odd_list: [1,3,5],
-        div_by_3_list: [0,3,6],
-      ]
-    end
+    test "Return even numbers", do:
+      assert Reduce.filter_even([0,1,2,3,4,5,6]) == [0,2,4,6]
 
-    test "Return even numbers", test_data do
-      assert Reduce.filter_even(test_data.list) == test_data.even_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 2) == 0 end) == test_data.even_list
-    end
+    test "Return odd numbers", do:
+      assert Reduce.filter_odd([0,1,2,3,4,5,6]) == [1,3,5]
 
-    test "Return odd numbers", test_data do
-      assert Reduce.filter_odd(test_data.list) == test_data.odd_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 2) != 0 end) == test_data.odd_list
-    end
-
-    test "Return all elements divisible by 3 numbers", test_data do
-      assert Reduce.filter_div(test_data.list, 3) == test_data.div_by_3_list
-      assert Reduce.filter(test_data.list, fn x -> rem(x, 3) == 0 end) == test_data.div_by_3_list
-    end
+    test "Return all elements divisible by 3 numbers", do:
+      assert Reduce.filter_div([0,1,2,3,4,5,6], 3) == [0,3,6]
   end
 
+  describe "Testing the higher order functions" do
+    test "Increment by given value", do:
+      assert Reduce.map([1,2,3,4,5], &(&1+5)) == [1+5,2+5,3+5,4+5,5+5]
+    test "Decrement by given value", do:
+      assert Reduce.map([1,2,3,4,5], &(&1-5)) == [1-5,2-5,3-5,4-5,5-5]
+    test "Multiply by given value", do:
+      assert Reduce.map([1,2,3,4,5], &(&1*5)) == [1*5,2*5,3*5,4*5,5*5]
+    test "Reminder by given value", do:
+      assert Reduce.map([1,2,3,4,5], &rem(&1,5)) == [1,2,3,4,0]
+    test "Return length non-empty of list", do:
+      assert Reduce.reduce([1,2,3,4], 0, fn _elem, acc -> 1+acc end) == 4
+    test "Return sum of non-empty list", do:
+      assert Reduce.reduce([1,2,3,4],0, &(+/2))  == 1+2+3+4
+    test "Return product of non-empty list", do:
+      assert Reduce.reduce([1,2,3,4], 1, &(*/2))  == 1*2*3*4
+    test "Empty sum", do:  assert Reduce.reduce([], 0, &(+/2)) == 0
+    test "Empty product", do: assert Reduce.reduce([], 1, &(*/2))  == 1
+    test "Return even numbers", do:
+      assert Reduce.filter([0,1,2,3,4,5,6], &rem(&1, 2) == 0) == [0,2,4,6]
+    test "Return odd numbers", do:
+      assert Reduce.filter([0,1,2,3,4,5,6], &rem(&1, 2) != 0) == [1,3,5]
+    test "Return all elements divisible by 3 numbers", do:
+      assert Reduce.filter([0,1,2,3,4,5,6], &rem(&1, 3) == 0) == [0,3,6]
+  end
 
+  describe "Test piping, take a list of integers
+            and returns the sum of the square of all values less than n" do
+    test "Piping step by step" do
+      n = 8
+      list = [1,2,3,4,5,6,7,8,9]
+      exp_result = 1*1+2*2+3*3+4*4+5*5+6*6+7*7
+      test_result = list |> Reduce.filter(&(&1 < n))
+                         |> Reduce.map(&(&1*&1))
+                         |> Reduce.reduce(0, &(+/2))
+      assert test_result == exp_result
+    end
+
+    test "Test the func that pipes" do
+      n = 8
+      list = [1,2,3,4,5,6,7,8,9]
+      exp_result = 1*1 + 2*2 + 3*3+ 4*4 + 5*5 + 6*6 + 7*7
+      test_result = Reduce.sum_of_squares_below(list, n)
+      assert test_result == exp_result
+    end
+  end
 end
