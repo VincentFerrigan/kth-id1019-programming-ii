@@ -158,18 +158,6 @@ defmodule Reduce do
                        else: filter_div(xs, n, acc)
   end
 
-#  #  HELPER FUNCTIONS FOR FILTERING
-##  These functions provide basic boolean checks used in filtering.
-#  @spec is_even(integer) :: boolean
-#  defp is_even(n), do: rem(n, 2) == 0
-#
-#  @spec is_odd(integer) :: boolean
-#  defp is_odd(n), do: rem(n, 2) != 0
-#
-#  @spec is_div(integer, integer) :: boolean
-#  defp is_div(n, d), do: rem(n, d) == 0
-
-
   # PART 2
   @doc """
   Applies a given function to each element of the list.
