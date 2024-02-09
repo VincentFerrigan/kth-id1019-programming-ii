@@ -119,24 +119,103 @@ The sum of an empty list must also result in its identity element, which is zero
     label=REDUCE TESTS,
 %        linenos=true,
 % TODO: Ska jag köra samtliga? dvs 5-50?
+%    firstline=5,
+%    lastline=50,
     firstline=19,
     lastline=39,
     xleftmargin=-3mm,  % Adjust this value as needed
 %        frame=single,
     fontsize=\footnotesize,
 ]{elixir}{../test/reduce_test.exs}
-As one can read from the subsection ~\autoref{subsec:ttd} above
-
-\subsubsection*{The overall Work-flow}
-\label{subsec:workflow}
-
 % TODO SKRIV OM HUR DU DELADE UPP KODEN ETC....??
 \section*{Result}
 \label{sec:result}
+The ten list operations were divided into the following three underlying patterns:
+\begin{description}
+    \setlength{\itemsep}{-1mm} % Decreases the space between items
+    \item[map:] inc, dec, mul, rem
+    \item[reduce:] length, sum, prod
+    \item[filter:] even, odd, div
+\end{description}
 Since all
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/lib/reduce.ex}{code (lib/reduce.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/4/reduce/test/reduce_test.exs}{tests (test/reduce\_test.exs)}
-could be found on GitHub, the author has chosen only to % TODO.........
+could be found on GitHub, the author has chosen to only present a few of the functions.
+\subsubsection*{map}
+Recursion typically involves two main components:
+a base case and recursive cases.
+The base case is the condition that ends the recursion
+by not making a further recursive call.
+The recursive cases are the conditions that continue the recursion by making
+a further recursive call to the function.
+In the code example below,
+\mintinline{elixir}{def map_mul([], _n), do: []} is the base case while
+\mintinline{elixir}{def map_mul([x|xs], n), do: [x*n|map_mul(xs, n)]} is the recursive call.
+\inputminted[
+label=map,
+firstline=54,
+lastline=56,
+xleftmargin=-3mm,  % Adjust this value as needed
+fontsize=\footnotesize,
+]{elixir}{../lib/reduce.ex}
+The function
+\mintinline{elixir}{map:mul/2} multiplies each element in the list by
+\mintinline{elixir}{n}.
+\subsubsection*{reduce}
+Both function
+\mintinline{elixir}{simple_reduce_prod/1} and
+\mintinline{elixir}{acc_reduce_prod/1} calculate the product of all elements in the list
+\inputminted[
+    label=simple reduce,
+    firstline=85,
+    lastline=87,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/reduce.ex}
+\inputminted[
+    label=acc reduce,
+    firstline=111,
+    lastline=116,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/reduce.ex}
+The difference is that the latter is tail-recursive,
+with the subsequent helper function
+\mintinline{elixir}{acc_reduce_prod/2}.
+These functions are defined with
+\mintinline{elixir}{defp}, making them private,
+which is why they serve as helpers to the public-facing wrapper function
+\mintinline{elixir}{acc_reduce:prod/1}.
+The first
+\mintinline{elixir}{acc_reduce_prod([], acc)},
+defines the base case for the recursion.
+When the list is empty, it returns the accumulated value,
+effectively ending the recursion.
+\mintinline{elixir}{acc_reduce_prod([x|xs], acc)},
+handles the recursive case,
+taking the head of the list
+\mintinline{elixir}{x},
+multiplying it with the accumulator
+\mintinline{elixir}{acc},
+and then recursively calling itself with the tail of the list
+\mintinline{elixir}{xs} and the new accumulated value
+\mintinline{elixir}{acc * x}.
+\subsubsection*{filter}
+The wrapper function
+\mintinline{elixir}{filter_odd/1}
+with its helper function
+\mintinline{elixir}{filter_odd/2}
+uses
+tail recursion to filter odd numbers from a list.
+\mintinline{elixir}{filter_odd/1}
+% TODO HÄR ÄR DU
+\inputminted[
+    label=filter,
+    firstline=137,
+    lastline=145,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/reduce.ex}
 
 %The head function
 %\mintinline{elixir}{}
@@ -158,12 +237,29 @@ could be found on GitHub, the author has chosen only to % TODO.........
 
 \section*{Discussion}
 \label{sec:discussion}
+The recursive calls in the helper functions above are structured in such a way
+(tail calls) that Elixir (or the Erlang VM, BEAM, it runs on)
+can optimize them.
 
-\subsection*{Part ONE}
-\label{subsec:dis-part1}
+Regular recursion, exemplified above in
+\mintinline{elixir}{simple_reduce_prod/1}),
+involves functions that make their recursive call but still
+have some computation to do after the call returns
+(\mintinline{elixir}{x * simple_reduce_prod(xs)}), potentially leading to
+larger memory usage due to the call stack.
 
-\subsubsection*{Part Two}
-\label{subsec:dis-part2}
+Tail recursion, on the other hand, as exemplified above in both
+\mintinline{elixir}{acc_reduce_prod/1}) and
+\mintinline{elixir}{filter_odd/1}),
+is a specific form of recursion where the recursive call is the last operation
+in the function.
+This allows for optimizations such as tail call optimization
+(TCO), where the compiler can reuse the current function's stack frame for the
+recursive call, significantly reducing memory usage and preventing stack
+overflow errors.
+Tail recursion is therefore considered more efficient and
+performant for certain algorithms, especially in languages and environments
+that support TCO.
 \end{document}
 
 % regular recursion involves functions that make their recursive call but still
