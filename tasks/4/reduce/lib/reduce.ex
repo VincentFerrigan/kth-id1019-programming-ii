@@ -109,11 +109,12 @@ defmodule Reduce do
   Tail-recursive approach to calculate the product of elements in the list.
   """
   @spec acc_reduce_prod([integer]) :: integer
-  def acc_reduce_prod(xs), do: acc_reduce_prod(xs, 1)                 # Wrapper function
+  def acc_reduce_prod(xs), do: acc_reduce_prod(xs, 1)    # Wrapper function
 
   @spec acc_reduce_prod([integer], integer) :: integer
-  defp acc_reduce_prod([], acc), do: acc                              # Base case
-  defp acc_reduce_prod([x|xs], acc), do: acc_reduce_prod(xs, acc * x) # Recursive case
+  defp acc_reduce_prod([], acc), do: acc                 # Base case
+  defp acc_reduce_prod([x|xs], acc),
+       do: acc_reduce_prod(xs, acc * x)                  # Recursive case
 
   # FILTER FUNCTIONS
   # Filter functions to select even, odd, and divisible numbers from a list.
@@ -166,15 +167,13 @@ defmodule Reduce do
   - `list`: The list of elements to be transformed.
   - `func`: The function to apply to each element of the list.
 
-  ## Examples:
+  ## Example:
       iex> Reduce.map([1, 2, 3], fn x -> x * 2 end)
       [2, 4, 6]
   """
   @spec map([A], (A -> B)) :: [B]
   def map([], _func), do: []
-  def map([x | xs], func) do
-    [func.(x) | map(xs, func)]
-  end
+  def map([x | xs], func), do: [func.(x) | map(xs, func)]
 
   @doc """
   Reduces a list to a single value by applying a function to each element and an accumulator.
@@ -192,15 +191,13 @@ defmodule Reduce do
 
   ## Examples
 
-      iex> Reduce.reduce([1, 2, 3], 0, fn acc, x -> acc + x end)
+      iex> Reduce.reduce([1, 2, 3], 0, &(+/2))
       6
 
   """
   @spec reduce([A], B, (A, B -> B)) :: B
   def reduce([], acc, _func), do: acc
-  def reduce([x | xs], acc, func) do
-    reduce(xs, func.(x, acc), func)
-  end
+  def reduce([x | xs], acc, func), do: reduce(xs, func.(x, acc), func)
 
   @doc """
   Filters a list by applying a predicate function to each element, returning those for which the function returns `true`.
@@ -210,14 +207,40 @@ defmodule Reduce do
   - `func`: The predicate function to apply to each element. It should return a boolean value.
 
   ## Examples:
-      iex> Reduce.filter([1, 2, 3, 4], fn x -> rem(x, 2) == 0 end)
+      iex> Reduce.filter1([1, 2, 3, 4], &rem(&1, 2) == 0)
       [2, 4]
   """
+  @spec filter1([A], (A -> boolean)) :: [A]
+  def filter1([], _func), do: []
+  def filter1([x | xs], func) do
+    if func.(x), do: [x | filter1(xs, func)],
+                 else: filter1(xs, func)
+  end
+
+  @doc """
+  Filters elements of a list based on a provided function.
+
+  ## Parameters
+  - `list`: The list of elements to be filtered.
+  - `func`: A function that takes an element of the list as input and returns a boolean. If `func` returns `true` for an element, that element is included in the result list.
+
+  ## Returns
+  - A new list containing only those elements for which `func` returns `true`.
+
+  ## Examples
+
+      iex> Reduce.filter([1, 2, 3, 4], fn x -> rem(x, 2) == 0 end)
+      [2, 4]
+
+  """
   @spec filter([A], (A -> boolean)) :: [A]
-  def filter([], _func), do: []
-  def filter([x | xs], func) do
-    if func.(x), do: [x | filter(xs, func)],
-                 else: filter(xs, func)
+  def filter(list, func), do: filter_acc(list, func, [])
+
+  # Private helper function with an accumulator
+  defp filter_acc([], _func, acc), do: Enum.reverse(acc)
+  defp filter_acc([x | xs], func, acc) do
+    if func.(x), do: filter_acc(xs, func, [x | acc]),
+                 else: filter_acc(xs, func, acc)
   end
 
   ## Function composition with piping
@@ -226,8 +249,7 @@ defmodule Reduce do
   that are less than `n`.
 
   This function demonstrates function composition with piping
-  in Elixir
-
+  in Elixir,
 
   ## Parameters:
   - `list`: The list of integers to process.
