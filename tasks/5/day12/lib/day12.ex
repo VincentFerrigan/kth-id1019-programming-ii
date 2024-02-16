@@ -60,10 +60,10 @@ defmodule Day12 do
   end
 
   @spec run_sample(String.t(), integer) :: integer
-  def run_sample(input, extend) do
+  def run_sample(input, multiplier) do
     input
     |> String.split("\n", trim: true)
-    |> Enum.map(&extend_input(&1, extend))
+    |> Enum.map(&extend_input(&1, multiplier))
     |> Enum.map(&parse_line/1)
     |> Enum.map(&brute_force_solve/1)
     |> Enum.sum()
@@ -151,12 +151,12 @@ defmodule Day12 do
 
   # Part II
   @spec part_2(String.t(), integer) :: {:ok, integer} | {:error, String.t()}
-  def part_2(file_path, extend) do
+  def part_2(file_path, multiplier) do
     try do
       result = file_path
                |> File.stream!()
                |> Enum.map(&String.trim/1)
-               |> Enum.map(&extend_input(&1, extend))
+               |> Enum.map(&extend_input(&1, multiplier))
                |> Stream.map(&parse_line/1)
                |> Enum.map(&brute_force_solve/1)
                |> Enum.sum()
@@ -166,11 +166,54 @@ defmodule Day12 do
     end
   end
 
-  def extend_input(input, extend) do
+  @doc """
+  Extends the input string by repeating each pattern and damaged sequence according to the specified multiplier.
+
+  ## Parameters
+  - input: A string containing the original pattern and damaged sequences.
+  - multiplier: An integer specifying how many times each pattern and sequence should be repeated.
+
+  ## Returns
+  An extended string with patterns and damaged sequences repeated according to the multiplier.
+
+  ## Example
+  iex> Day12.extend_input("???.### 1,1,3", 2)
+  "???.###????.### 1,1,3,1,1,3"
+  """
+  @spec extend_input(String.t(), integer) :: String.t()
+  def extend_input(input, multiplier) do
     [pattern, sequence_str] = String.split(input, " ")
-    extended_pattern = Enum.join(List.duplicate(pattern, extend), "?")
-    extended_sequence_str = Enum.join(List.duplicate(sequence_str, extend), ",")
+    extended_pattern = Enum.join(List.duplicate(pattern, multiplier), "?")
+    extended_sequence_str = Enum.join(List.duplicate(sequence_str, multiplier), ",")
     Enum.join([extended_pattern, extended_sequence_str], " ")
+  end
+
+  @doc """
+  Runs the dynamic sample input and calculates the total number of valid spring arrangements.
+
+  This function takes an input string representing the dynamic sample spring descriptions,
+  extends each line's pattern and damaged springs sequence according to the provided multiplier,
+  then calculates the total number of valid arrangements using a dynamic programming approach.
+
+  ## Parameters
+  - input: A string containing the dynamic sample spring descriptions.
+  - multiplier: An integer specifying how many times each pattern and sequence should be repeated.
+
+  ## Returns
+  The total number of valid configurations that match the given sequences of damaged springs.
+
+  ## Example
+  iex> Day12.run_dynamic_sample("???.### 1,1,3\\n.??..??...?##. 1,1,3", 5)
+  16385
+  """
+  @spec run_dynamic_sample(String.t(), integer) :: integer
+  def run_dynamic_sample(input, multiplier) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&extend_input(&1, multiplier))
+    |> Enum.map(&parse_line/1)
+    |> Enum.map(&dynamic/1)
+    |> Enum.sum()
   end
 
   @spec run_dynamic_sample(String.t()) :: integer
@@ -182,16 +225,26 @@ defmodule Day12 do
     |> Enum.sum()
   end
 
-  @spec run_dynamic_sample(String.t(), integer) :: integer
-  def run_dynamic_sample(input, extend) do
-    input
-    |> String.split("\n", trim: true)
-    |> Enum.map(&extend_input(&1, extend))
-    |> Enum.map(&parse_line/1)
-    |> Enum.map(&dynamic/1)
-    |> Enum.sum()
-  end
+  @doc """
+  Dynamic programming solution for calculating the number of valid arrangements of springs.
 
+  This function takes a tuple containing the pattern of springs as a charlist and the sequence of damaged springs as a list of integers.
+  It recursively calculates the total number of valid configurations using a dynamic programming approach.
+
+  ## Parameters
+  - input: A tuple containing the pattern of springs as a charlist and the sequence of damaged springs as a list of integers.
+
+  ## Returns
+  A tuple where the first element is the total number of valid configurations that match the given sequence of damaged springs,
+  and the second element is the updated memoization table storing intermediate results.
+
+  Note: This function is used internally for memoization in the dynamic programming approach.
+
+  ## Examples
+
+    iex> Day12.dynamic({~c"????.######..#####.", [1, 6, 5]})
+    4
+  """
   def dynamic({pattern, sequence}) do
     {result, _} = dynamic({pattern, sequence, false, 0}, %{})
     result
