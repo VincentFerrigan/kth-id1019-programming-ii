@@ -1,0 +1,152 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{
+    Reduce and friends
+    \\Part Two
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+ \date{\today}
+
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+The chief objective of this two-part assignment is to explore the significance
+and utility of \emph{Dynamic Programming}.
+
+Part one, covered in this report, consists of solving a puzzle with
+\emph{''brute force''}.
+The task is to solve the problem of analyzing a field of
+hot springs with varying conditions.
+The objective is to parse descriptions of rows of springs,
+where each spring can be operational (denoted by \verb|.|),
+damaged (denoted by \verb|#|), or of unknown status (denoted by \verb|?|),
+and then to determine the number of valid arrangements of springs
+based on a sequence of numbers that indicate the consecutive counts of damaged springs.
+
+The second part will add memoization to the mix i.e.
+solving the puzzle with dynamic programming.
+It will also include benchmarks, comparing the brute force solution to the dynamic one.
+
+%The second part, covered by this report, add memoization i.e.
+%solving the puzzle with dynamic programming.
+%It will also include benchmarks, comparing the brute force solution to the dynamic one.
+
+This assignment is based on the instruction
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/springs/springs.pdf}{'Hot springs'}
+by course examiner Johan Montelius.
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12}{Repo Programming II - Day12}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}
+\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+The pre-recorded lectures on
+\href{https://canvas.kth.se/courses/44911/assignments/syllabus}{''v7 Komplexitet och dynamisk programmering''},
+given by the course examiner, were reviewed.
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+Chapter 14 \emph{Dynamic Programming} in the Advance Alorithms book
+\emph{Programming Problems} by Bradley Green was also studied.
+
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+For exploration and benchmarking, the interactive environment and notebook
+\href{https://livebook.dev/}{\emph{Livebook}}
+was heavily used.
+
+\subsubsection*{Test Driven Development}
+\label{subsec:ttd}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+For example, before creating the three higher-order functions,
+one can first write a couple of test cases, as illustrated in the test-examples below.
+
+%TODO.
+%The product of an empty list should be one (the empty product),
+%since one is the identity element for multiplication.
+%The sum of an empty list must also result in its identity element, which is zero.
+\inputminted[
+    label=SAMPLE TESTS,
+    firstline=5,
+    lastline=13,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/day12_test.exs}
+
+\section*{Result}
+\label{sec:result}
+All
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12/lib/day12.ex}{code (lib/day12.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12/test/day12_test.exs}{tests (test/day12\_test.exs)}
+can be found on GitHub.
+.....
+%TODO, Go through an example
+
+%\mintinline{elixir}{}
+\inputminted[
+label=map,
+firstline=174,
+lastline=176,
+xleftmargin=-3mm,  % Adjust this value as needed
+fontsize=\footnotesize,
+]{elixir}{../lib/day12.ex}
+\section*{Discussion}
+\label{sec:discussion}
+\end{document}
