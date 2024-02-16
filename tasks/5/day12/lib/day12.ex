@@ -18,12 +18,12 @@ defmodule Day12 do
   ## Returns
   {:ok, integer} when successful, {:error, string} if an error occurs during file processing.
   """
-  @spec part_1(String.t()) :: {:ok, integer} | {:error, String.t()}
-  def part_1(file_path) do
+  @spec part_1(String.t(), integer) :: {:ok, integer} | {:error, String.t()}
+  def part_1(file_path, multiplier \\ 1) do
     try do
       result = file_path
                |> File.stream!()
-               |> Enum.map(&String.trim/1)
+               |> Enum.map(&String.trim/1) |> Enum.map(&extend_input(&1, multiplier))
                |> Stream.map(&parse_line/1)
                |> Enum.map(&brute_force_solve/1)
                |> Enum.sum()
@@ -151,14 +151,14 @@ defmodule Day12 do
 
   # Part II
   @spec part_2(String.t(), integer) :: {:ok, integer} | {:error, String.t()}
-  def part_2(file_path, multiplier) do
+  def part_2(file_path, multiplier \\ 1) do
     try do
       result = file_path
                |> File.stream!()
                |> Enum.map(&String.trim/1)
                |> Enum.map(&extend_input(&1, multiplier))
                |> Stream.map(&parse_line/1)
-               |> Enum.map(&brute_force_solve/1)
+               |> Enum.map(&dynamic/1)
                |> Enum.sum()
       {:ok, result} # Wrap the computation result in {:ok, _}
     rescue
@@ -294,5 +294,4 @@ defmodule Day12 do
     {put_hash,_} = dynamic({record, sequence, (s == 1), s - 1}, mem)
     {put_dot + put_hash, mem}
   end
-
 end
