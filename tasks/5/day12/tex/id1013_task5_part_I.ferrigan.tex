@@ -51,22 +51,22 @@ The chief objective of this two-part assignment is to explore the significance
 and utility of \emph{Dynamic Programming}.
 
 Part one, covered in this report, consists of solving a puzzle with
-\emph{''brute force''}.
+\emph{''brute-force''}.
 The task is to solve the problem of analyzing a field of
 hot springs with varying conditions.
 The objective is to parse descriptions of rows of springs,
-where each spring can be operational (denoted by \verb|.|),
-damaged (denoted by \verb|#|), or of unknown status (denoted by \verb|?|),
+where each spring can be operational (denoted by \verb|'.'|),
+damaged (denoted by \verb|'#'|), or of unknown status (denoted by \verb|'?'|),
 and then to determine the number of valid arrangements of springs
 based on a sequence of numbers that indicate the consecutive counts of damaged springs.
 
 The second part will add memoization to the mix i.e.
 solving the puzzle with dynamic programming.
-It will also include benchmarks, comparing the brute force solution to the dynamic one.
+It will also include benchmarks, comparing the brute-force solution to the dynamic one.
 
 %The second part, covered by this report, add memoization i.e.
 %solving the puzzle with dynamic programming.
-%It will also include benchmarks, comparing the brute force solution to the dynamic one.
+%It will also include benchmarks, comparing the brute-force solution to the dynamic one.
 
 This assignment is based on the instruction
 \href{https://people.kth.se/~johanmon/courses/id1019/seminars/springs/springs.pdf}{'Hot springs'}
@@ -74,8 +74,7 @@ by course examiner Johan Montelius.
 The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12}{Repo Programming II - Day12}% TODO FUNKAR DEN? ÄNDRA NAMN
 
-\section*{Methods}
-\label{sec:methods}
+\section*{Methods}\label{sec:methods}
 \subsection*{Literature Study}
 \label{subsec:literaturestudy}
 The pre-recorded lectures on
@@ -105,8 +104,7 @@ For exploration and benchmarking, the interactive environment and notebook
 \href{https://livebook.dev/}{\emph{Livebook}}
 was heavily used.
 
-\subsubsection*{Test Driven Development}
-\label{subsec:ttd}
+\subsubsection*{Test Driven Development}\label{sec:ttd}
 The development was an iterative approach with ''trail and errors''.
 The author practiced
 \href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
@@ -129,7 +127,7 @@ one can first write a couple of test cases, as illustrated in the test-example b
 runs the sample input and calculates the total number of valid spring arrangements.
 It takes an input string representing the sample spring descriptions,
 separates each line into spring conditions and damaged springs sequence,
-then calculates the total number of valid arrangements using a brute force approach.
+then calculates the total number of valid arrangements using a brute-force approach.
 \inputminted[
 label=map,
 firstline=53,
@@ -138,7 +136,7 @@ xleftmargin=-3mm,  % Adjust this value as needed
 fontsize=\footnotesize,
 ]{elixir}{../lib/day12.ex}
 \inputminted[
-    label=map,
+    label=run_sample/1,
     firstline=50,
     lastline=51,
     xleftmargin=-3mm,  % Adjust this value as needed
@@ -147,69 +145,94 @@ fontsize=\footnotesize,
 
 \section*{Result}
 \label{sec:result}
+In this section, a step-by-step explanation will be given to illustrate
+a simplified view of the brute-force solution's algorithm's logic.
 All
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12/lib/day12.ex}{code (lib/day12.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12/test/day12_test.exs}{tests (test/day12\_test.exs)}
 can be found on GitHub.
-.....
-For example, given the sample
-\mintinline{elixir}{"????.######..#####. 1,6,5"}, the
-\mintinline{elixir}{run_sample/1} mentioned in the
-~\href{sec:methods}{method section} above, would do the following:
 
+Given the sample
+\mintinline{elixir}{"????.######..#####. 1,6,5"}, the
+\mintinline{elixir}{run_sample/1} function mentioned in the
+~\hyperref[sec:ttd]{method section} above, would do the following:
 \begin{enumerate}
     \item The input is split and parsed by the function
 \mintinline{elixir}{parse_line/1} into a pattern (list of chars)
 \mintinline[fontsize=\small]{elixir}{~c"????.######..#####"} and a sequence
 \mintinline{elixir}{[1, 6, 5]}.
 \inputminted[
-    label=map,
-    firstline=76,
-    lastline=82,
+    label=parse_line/1,
+    firstline=86,
+    lastline=93,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day12.ex}
 \inputminted[
-    label=map,
-    firstline=73,
-    lastline=74,
+    label=iex parse_line/1,
+    firstline=83,
+    lastline=84,
     xleftmargin=-6mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day12.ex}
 
-\item Initiate Solving: The
-\mintinline{elixir}{brute_force_solve/1} function calls
+\item The
+\mintinline{elixir}{brute_force_solve/1} function calls the helper function
 \mintinline{elixir}{count/4} with the parsed pattern, sequence, false for needing a dot,
-and 0 for the initial count of needed hashes.
+and $0$ for the initial count of needed hashes.
+    \inputminted[
+        label=brute_force_solve/2,
+        firstline=111,
+        lastline=114,
+        xleftmargin=-3mm,  % Adjust this value as needed
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/day12.ex}
+    \inputminted[
+        label=iex brute_force_solve/2,
+        firstline=108,
+        lastline=109,
+        xleftmargin=-6mm,  % Adjust this value as needed
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/day12.ex}
+    The $\sim$c sigma for charlists will be further explained in the ~\hyperref[sec:discussion]{discussion} section below.
 
-\item Recursive Counting: The
-\mintinline{elixir}{count/4} function begins processing the pattern:
+\item Recursive Counting. The helper
+\mintinline{elixir}{count/4} function begins processing the pattern.
+These auxiliary functions recursively explore different combinations of springs
+and count the number of valid arrangements according to the sequence of damaged springs.
 
-For each \verb|?|, it considers two paths: as a \verb|.| and as a \verb|#|.
-This branching occurs for the first four \verb|?| characters,
+For each \verb|'?'|, it considers two paths: as a \verb|'.'| and as a \verb|'#'|.
+This branching occurs for the first four \verb|'?'| characters,
 creating a combination of possibilities.
-When encountering the sequence of six \verb|#|,
+When encountering the sequence of six \verb|'#'|,
 it matches this with the sequence part \verb|[6]|.
 Since there's an exact match, this path continues.
-The dots (\verb|..|) are passed without issue,
+The dots (\verb|'..'|) are passed without issue,
 as they don't conflict with any requirements.
-The next sequence of five \verb|#| matches the last part of the sequence \verb|[5]|.
+The next sequence of five \verb|'#'| matches the last part of the sequence \verb|[5]|.
+    \inputminted[
+        label=count/4,
+        firstline=124,
+        lastline=150,
+        xleftmargin=-3mm,  % Adjust this value as needed
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/day12.ex}
+The
+\mintinline{elixir}{count/4} function is overloaded with several clauses to handle different cases in the pattern
+and sequence, implementing the recursive exploration of configurations.
 
-\item Calculate Results: Each valid path through the pattern that matches the sequence
+\item Calculate Results. Each valid path through the pattern that matches the sequence
 increments the count.
-In cases where a \verb|?| can be either a \verb|.| or a \verb|#|
+In cases where a \verb|'?'| can be either a \verb|'.'| or a \verb|'#'|
 without violating the sequence constraints, both possibilities are explored,
-potentially doubling the count for each \verb|?|.
+potentially doubling the count for each \verb|'?'|.
 However, any sequence that doesn't match exactly results in a branch of calculation
-returning 0, pruning that path from the total count.
+returning $0$, omitting that path from the total count.
 
-\item Final Count: The sum of all valid paths gives the total count of arrangements.
-The algorithm efficiently prunes impossible configurations early through its
+\item Final Count. The sum of all valid paths gives the total count of arrangements.
+The algorithm efficiently removes impossible combinations early through its
 recursive checks.
 \end{enumerate}
-
-\noindent This step-by-step explanation illustrates a simplified view of the algorithm's logic. The real power of Elixir's pattern matching and recursion shines in handling complex branching with concise code.
-%TODO, Go through an example
 
 %\inputminted[
 %label=map,
@@ -228,9 +251,16 @@ recursive checks.
 %xleftmargin=-3mm,  % Adjust this value as needed
 %fontsize=\footnotesize,
 %]{elixir}{../lib/day12.ex}
-\section*{Discussion}
-\label{sec:discussion}
-
+\section*{Discussion}\label{sec:discussion}
+\subsection*{Brute force}
+Brute force is a good strategy for solving the first part of the assignment,
+and I guess, the first part of any Advent Of Code.
+It ensures that all possible combinations and edge cases are explored,
+guaranteeing the discovery of all valid arrangements.
+This approach is straightforward and (only) workable
+when the problem size is manageable (i.e. working with small samples).
+However, it can be inefficient for larger problems due to the
+exponential growth of possibilities.
 \subsection*{Charlists}
 Please note that charlists are created using the
 $\sim$c Sigil.
@@ -240,7 +270,7 @@ Each value in a charlist, according to
 \href{https://elixirschool.com/en/lessons/basics/strings#charlists-1}{Elixir School},
 is the \emph{Unicode code point} of a character whereas in a binary,
 the codepoints are encoded as \emph{UTF-8}.
-The first 128 characters of UTF-8 have the same binary values as \emph{ASCII},
+The first $128$ characters of UTF-8 have the same binary values as \emph{ASCII},
 making ASCII text valid UTF-8.
 However, according to
 \href{https://hexdocs.pm/elixir/binaries-strings-and-charlists.html}{Elixirs Official Documentation},
