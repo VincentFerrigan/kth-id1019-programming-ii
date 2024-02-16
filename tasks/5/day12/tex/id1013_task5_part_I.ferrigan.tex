@@ -116,11 +116,7 @@ writing failing tests (Red), make them pass (Green),
 and finally refactor the code.
 For example, before creating the three higher-order functions,
 one can first write a couple of test cases, as illustrated in the test-example below.
-
 %TODO.
-%The product of an empty list should be one (the empty product),
-%since one is the identity element for multiplication.
-%The sum of an empty list must also result in its identity element, which is zero.
 \inputminted[
     label=SAMPLE TESTS,
     firstline=5,
@@ -128,6 +124,26 @@ one can first write a couple of test cases, as illustrated in the test-example b
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../test/day12_test.exs}
+\noindent The
+\mintinline{elixir}{run_sample/1},
+runs the sample input and calculates the total number of valid spring arrangements.
+It takes an input string representing the sample spring descriptions,
+separates each line into spring conditions and damaged springs sequence,
+then calculates the total number of valid arrangements using a brute force approach.
+\inputminted[
+label=map,
+firstline=53,
+lastline=60,
+xleftmargin=-3mm,  % Adjust this value as needed
+fontsize=\footnotesize,
+]{elixir}{../lib/day12.ex}
+\inputminted[
+    label=map,
+    firstline=50,
+    lastline=51,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day12.ex}
 
 \section*{Result}
 \label{sec:result}
@@ -136,7 +152,72 @@ All
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/5/day12/test/day12_test.exs}{tests (test/day12\_test.exs)}
 can be found on GitHub.
 .....
+For example, given the sample
+\mintinline{elixir}{"????.######..#####. 1,6,5"}, the
+\mintinline{elixir}{run_sample/1} mentioned in the
+~\href{sec:methods}{method section} above, would do the following:
+
+\begin{enumerate}
+    \item The input is split and parsed by the function
+\mintinline{elixir}{parse_line/1} into a pattern (list of chars)
+\mintinline[fontsize=\small]{elixir}{~c"????.######..#####"} and a sequence
+\mintinline{elixir}{[1, 6, 5]}.
+\inputminted[
+    label=map,
+    firstline=76,
+    lastline=82,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day12.ex}
+\inputminted[
+    label=map,
+    firstline=73,
+    lastline=74,
+    xleftmargin=-6mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day12.ex}
+
+\item Initiate Solving: The
+\mintinline{elixir}{brute_force_solve/1} function calls
+\mintinline{elixir}{count/4} with the parsed pattern, sequence, false for needing a dot,
+and 0 for the initial count of needed hashes.
+
+\item Recursive Counting: The
+\mintinline{elixir}{count/4} function begins processing the pattern:
+
+For each \verb|?|, it considers two paths: as a \verb|.| and as a \verb|#|.
+This branching occurs for the first four \verb|?| characters,
+creating a combination of possibilities.
+When encountering the sequence of six \verb|#|,
+it matches this with the sequence part \verb|[6]|.
+Since there's an exact match, this path continues.
+The dots (\verb|..|) are passed without issue,
+as they don't conflict with any requirements.
+The next sequence of five \verb|#| matches the last part of the sequence \verb|[5]|.
+
+\item Calculate Results: Each valid path through the pattern that matches the sequence
+increments the count.
+In cases where a \verb|?| can be either a \verb|.| or a \verb|#|
+without violating the sequence constraints, both possibilities are explored,
+potentially doubling the count for each \verb|?|.
+However, any sequence that doesn't match exactly results in a branch of calculation
+returning 0, pruning that path from the total count.
+
+\item Final Count: The sum of all valid paths gives the total count of arrangements.
+The algorithm efficiently prunes impossible configurations early through its
+recursive checks.
+\end{enumerate}
+
+\noindent This step-by-step explanation illustrates a simplified view of the algorithm's logic. The real power of Elixir's pattern matching and recursion shines in handling complex branching with concise code.
 %TODO, Go through an example
+
+%\inputminted[
+%label=map,
+%firstline=56,
+%lastline=57,
+%xleftmargin=-3mm,  % Adjust this value as needed
+%fontsize=\footnotesize,
+%]{elixir}{../lib/day12.ex}
 
 %\mintinline{elixir}{}
 
@@ -149,6 +230,21 @@ can be found on GitHub.
 %]{elixir}{../lib/day12.ex}
 \section*{Discussion}
 \label{sec:discussion}
+
+\subsection*{Charlists}
+Please note that charlists are created using the
+$\sim$c Sigil.
+Elixir \emph{strings} are enclosed with double quotes,
+while \emph{charlists} are enclosed with single quotes.
+Each value in a charlist, according to
+\href{https://elixirschool.com/en/lessons/basics/strings#charlists-1}{Elixir School},
+is the \emph{Unicode code point} of a character whereas in a binary,
+the codepoints are encoded as \emph{UTF-8}.
+The first 128 characters of UTF-8 have the same binary values as \emph{ASCII},
+making ASCII text valid UTF-8.
+However, according to
+\href{https://hexdocs.pm/elixir/binaries-strings-and-charlists.html}{Elixirs Official Documentation},
+the list is only printed as a sigil if all code points are within the ASCII range.
     %TODO, write about brute force being a solution to solve a puzzle with a small sample
     % especially when solving AOC
 \end{document}
