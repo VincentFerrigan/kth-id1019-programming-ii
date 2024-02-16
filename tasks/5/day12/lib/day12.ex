@@ -2,6 +2,7 @@ defmodule Day12 do
   @moduledoc """
   """
 
+  @spec part_1(String.t()) :: {:ok, integer} | {:error, String.t()}
   def part_1(file_path) do
     try do
       result = file_path
@@ -16,6 +17,7 @@ defmodule Day12 do
     end
   end
 
+  @spec part_1(String.t()) :: integer
   def run_sample(input) do
     input
     |> String.split("\n", trim: true)
@@ -24,6 +26,7 @@ defmodule Day12 do
     |> Enum.sum()
   end
 
+  @spec parse_line(String.t()) :: {[char], [integer]}
   def parse_line(line) do
     [pattern, sequence_str] = String.split(line, " ")
     sequence = String.split(sequence_str, ",") |> Enum.map(&String.to_integer/1)
@@ -31,6 +34,7 @@ defmodule Day12 do
     {pattern, sequence}
   end
 
+  @spec brute_force_solve({[char], [integer]}) :: [integer]
   def brute_force_solve({pattern, sequence}) do
     count(pattern, sequence, false, 0)
   end
