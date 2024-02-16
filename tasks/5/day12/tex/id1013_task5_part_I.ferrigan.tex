@@ -34,15 +34,14 @@
 \usepackage{hyperref}
 
 \begin{document}
-
 \title{
-    Reduce and friends
-    \\Part Two
+    Hot Springs
+    \\Part Ons
 \\\small{Programmering II, ID1019, VT24 P1}
 }
 \author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
 
- \date{\today}
+\date{\today}
 
 \maketitle
 
@@ -116,7 +115,7 @@ The basic steps follow the \emph{Red-Green-Refactor cycle};
 writing failing tests (Red), make them pass (Green),
 and finally refactor the code.
 For example, before creating the three higher-order functions,
-one can first write a couple of test cases, as illustrated in the test-examples below.
+one can first write a couple of test cases, as illustrated in the test-example below.
 
 %TODO.
 %The product of an empty list should be one (the empty product),
@@ -140,13 +139,16 @@ can be found on GitHub.
 %TODO, Go through an example
 
 %\mintinline{elixir}{}
-\inputminted[
-label=map,
-firstline=174,
-lastline=176,
-xleftmargin=-3mm,  % Adjust this value as needed
-fontsize=\footnotesize,
-]{elixir}{../lib/day12.ex}
+
+%\inputminted[
+%label=map,
+%firstline=174,
+%lastline=176,
+%xleftmargin=-3mm,  % Adjust this value as needed
+%fontsize=\footnotesize,
+%]{elixir}{../lib/day12.ex}
 \section*{Discussion}
 \label{sec:discussion}
+    %TODO, write about brute force being a solution to solve a puzzle with a small sample
+    % especially when solving AOC
 \end{document}
