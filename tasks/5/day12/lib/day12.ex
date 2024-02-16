@@ -1,7 +1,23 @@
 defmodule Day12 do
   @moduledoc """
+  Implements the solution for the Advent of Code 2023, Day 12 puzzle.
+  This module focuses on analyzing a field of hot springs, where each spring's condition
+  can be operational, damaged, or unknown. The main challenge is to determine the total number
+  of valid spring arrangements across all rows based on partial descriptions and sequences of damaged springs.
   """
 
+  @doc """
+  Calculates the total number of valid spring arrangements from a file containing rows of spring descriptions.
+
+  Each line in the file represents a row of springs with their conditions (operational, damaged, or unknown)
+  followed by a sequence of integers indicating the consecutive counts of damaged springs.
+
+  ## Parameters
+  - file_path: The path to the input file containing the spring descriptions.
+
+  ## Returns
+  {:ok, integer} when successful, {:error, string} if an error occurs during file processing.
+  """
   @spec part_1(String.t()) :: {:ok, integer} | {:error, String.t()}
   def part_1(file_path) do
     try do
@@ -17,7 +33,24 @@ defmodule Day12 do
     end
   end
 
-  @spec part_1(String.t()) :: integer
+  @doc """
+  Runs the sample input and calculates the total number of valid spring arrangements.
+
+  This function takes an input string representing the sample spring descriptions,
+  separates each line into spring conditions and damaged springs sequence,
+  then calculates the total number of valid arrangements using a brute force approach.
+
+  ## Parameters
+  - input: A string containing the sample spring descriptions.
+
+  ## Returns
+  The total number of valid configurations that match the given sequences of damaged springs.
+
+  ## Example
+  iex> Day12.run_sample("???.### 1,1,3\\n.??..??...?##. 1,1,3")
+  5
+  """
+  @spec run_sample(String.t()) :: integer
   def run_sample(input) do
     input
     |> String.split("\n", trim: true)
@@ -26,14 +59,55 @@ defmodule Day12 do
     |> Enum.sum()
   end
 
+  @spec run_sample(String.t(), integer) :: integer
+  def run_sample(input, extend) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&extend_input(&1, extend))
+    |> Enum.map(&parse_line/1)
+    |> Enum.map(&brute_force_solve/1)
+    |> Enum.sum()
+  end
+
+  @doc """
+  Parses a single line from the input, separating the spring condition pattern from the sequence of damaged springs.
+
+  ## Parameters
+  - line: A string representing a row of springs and their conditions.
+
+  ## Returns
+  A tuple where the first element is a list of characters representing the spring conditions,
+  and the second element is a list of integers representing the sequence of damaged springs.
+  ## Examples
+
+    iex> Day12.parse_line("????.######..#####. 1,6,5")
+    {~c"????.######..#####.", [1, 6, 5]}
+  """
   @spec parse_line(String.t()) :: {[char], [integer]}
   def parse_line(line) do
     [pattern, sequence_str] = String.split(line, " ")
-    sequence = String.split(sequence_str, ",") |> Enum.map(&String.to_integer/1)
+    sequence = String.split(sequence_str, ",")
+               |> Enum.map(&String.to_integer/1)
     pattern = String.to_charlist(pattern)
     {pattern, sequence}
   end
 
+  @doc """
+  Solves for the number of valid arrangements of springs based on a given pattern and sequence of damaged springs.
+
+  Uses a brute force approach to explore all possible configurations of unknown springs ('?') to match the provided sequence of damaged springs.
+
+  ## Parameters
+  - input: A tuple containing the pattern of springs as a charlist and the sequence of damaged springs as a list of integers.
+
+  ## Returns
+  The total number of valid configurations that match the given sequence of damaged springs.
+
+  ## Examples
+
+    iex> Day12.brute_force_solve({~c"????.######..#####.", [1, 6, 5]})
+    4
+  """
   @spec brute_force_solve({[char], [integer]}) :: [integer]
   def brute_force_solve({pattern, sequence}) do
     count(pattern, sequence, false, 0)
@@ -50,49 +124,122 @@ defmodule Day12 do
   defp count([], [], _needs_dot, 0), do: 1
   defp count([], [], _needs_dot, needs_hashes) when needs_hashes > 0, do: 0
   defp count([], [_ | _], _, _), do: 0
-
   defp count([?# | _], _sequence, true, _), do: 0
   defp count([?# | _], [], _, 0), do: 0
-
-  defp count([?# | record], sequence, false, 1) do
+  defp count([?# | record], sequence, false, 1), do:
     count(record, sequence, true, 0)
-  end
-
-  defp count([?# | record], sequence, false, need_hashes) when need_hashes > 1 do
-    count(record, sequence, false, need_hashes - 1)
-  end
-
-  defp count([?# | record], [run | sequence], false, 0) do
-    count(record, sequence, run == 1, run - 1)
-  end
-
-  defp count([?. | record], sequence, _needs_dot, 0) do
-    count(record, sequence, false, 0)
-  end
-
-  defp count([?. | _], _sequence, _needs_dot, need_hashes) when need_hashes > 0, do: 0
-
-  defp count([?? | record], sequence, true, 0) do
-    count(record, sequence, false, 0)
-  end
-
-  defp count([?? | record], [], false, 0) do
-    count(record, [], false, 0)
-  end
-
-  defp count([?? | record], sequence, false, 1) do
-    count(record, sequence, true, 0)
-  end
-
-  defp count([?? | record], sequence, false, need_hashes) when need_hashes > 1 do
-    count(record, sequence, false, need_hashes - 1)
-  end
-
+  defp count([?# | record], sequence, false, need_hashes) when need_hashes > 1,
+       do: count(record, sequence, false, need_hashes - 1)
+  defp count([?# | record], [run | sequence], false, 0),
+       do: count(record, sequence, run == 1, run - 1)
+  defp count([?. | record], sequence, _needs_dot, 0),
+       do: count(record, sequence, false, 0)
+  defp count([?. | _], _sequence, _needs_dot, need_hashes) when need_hashes > 0,
+       do: 0
+  defp count([?? | record], sequence, true, 0),
+       do: count(record, sequence, false, 0)
+  defp count([?? | record], [], false, 0), do: count(record, [], false, 0)
+  defp count([?? | record], sequence, false, 1),
+       do: count(record, sequence, true, 0)
+  defp count([?? | record], sequence, false, need_hashes) when need_hashes > 1,
+       do: count(record, sequence, false, need_hashes - 1)
   defp count([?? | record], [s | sequence], false, 0) do
     put_dot = count(record, [s| sequence], false, 0)
     put_hash = count(record, sequence, (s == 1), s - 1)
-    # Debugging output to help understand branching decisions
-    #    IO.puts("#{length(record)}: Branch: . => #{put_dot}, # => #{put_hash}; sequence; #{inspect([s | sequence])}")
     put_dot + put_hash
   end
+
+  # Part II
+  @spec part_2(String.t(), integer) :: {:ok, integer} | {:error, String.t()}
+  def part_2(file_path, extend) do
+    try do
+      result = file_path
+               |> File.stream!()
+               |> Enum.map(&String.trim/1)
+               |> Enum.map(&extend_input(&1, extend))
+               |> Stream.map(&parse_line/1)
+               |> Enum.map(&brute_force_solve/1)
+               |> Enum.sum()
+      {:ok, result} # Wrap the computation result in {:ok, _}
+    rescue
+      e in [File.Error] -> {:error, "Failed to process file: #{e.message}"}
+    end
+  end
+
+  def extend_input(input, extend) do
+    [pattern, sequence_str] = String.split(input, " ")
+    extended_pattern = Enum.join(List.duplicate(pattern, extend), "?")
+    extended_sequence_str = Enum.join(List.duplicate(sequence_str, extend), ",")
+    Enum.join([extended_pattern, extended_sequence_str], " ")
+  end
+
+  @spec run_dynamic_sample(String.t()) :: integer
+  def run_dynamic_sample(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&parse_line/1)
+    |> Enum.map(&dynamic/1)
+    |> Enum.sum()
+  end
+
+  @spec run_dynamic_sample(String.t(), integer) :: integer
+  def run_dynamic_sample(input, extend) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&extend_input(&1, extend))
+    |> Enum.map(&parse_line/1)
+    |> Enum.map(&dynamic/1)
+    |> Enum.sum()
+  end
+
+  def dynamic({pattern, sequence}) do
+    {result, _} = dynamic({pattern, sequence, false, 0}, %{})
+    result
+  end
+
+  def dynamic(args = {pattern, sequence, needs_dot, need_hashes}, mem) do
+    case Map.get(mem, args) do
+      nil ->
+        {result, new_mem} = count(pattern, sequence, needs_dot, need_hashes, mem)
+        {result, Map.put(new_mem, args, result)}
+      result ->
+        {result, mem}
+    end
+  end
+
+  defp count([], [], _needs_dot, 0, mem),
+       do: {1, mem}
+  defp count([], [], _needs_dot, needs_hashes, mem) when needs_hashes > 0,
+       do: {0, mem}
+  defp count([], [_ | _], _, _, mem),
+       do: {0, mem}
+  defp count([?# | _], _sequence, true, _, mem),
+       do: {0, mem}
+  defp count([?# | _], [], _, 0, mem),
+       do: {0, mem}
+
+  defp count([?# | record], sequence, false, 1, mem),
+       do: count(record, sequence, true, 0, mem)
+  defp count([?# | record], sequence, false, need_hashes, mem) when need_hashes > 1,
+       do: count(record, sequence, false, need_hashes - 1, mem)
+  defp count([?# | record], [run | sequence], false, 0, mem),
+       do: count(record, sequence, run == 1, run - 1, mem)
+  defp count([?. | record], sequence, _needs_dot, 0, mem),
+       do: count(record, sequence, false, 0, mem)
+  defp count([?. | _], _sequence, _needs_dot, need_hashes, mem) when need_hashes > 0,
+       do: {0, mem}
+  defp count([?? | record], sequence, true, 0, mem),
+       do: count(record, sequence, false, 0, mem)
+  defp count([?? | record], [], false, 0, mem),
+       do: count(record, [], false, 0, mem)
+  defp count([?? | record], sequence, false, 1, mem),
+       do: count(record, sequence, true, 0, mem)
+  defp count([?? | record], sequence, false, need_hashes, mem) when need_hashes > 1,
+       do: count(record, sequence, false, need_hashes - 1, mem)
+  defp count([?? | record], [s | sequence], false, 0, mem) do
+    {put_dot, _} = dynamic({record, [s| sequence], false, 0}, mem)
+    {put_hash,_} = dynamic({record, sequence, (s == 1), s - 1}, mem)
+    {put_dot + put_hash, mem}
+  end
+
 end
