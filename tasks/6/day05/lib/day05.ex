@@ -113,24 +113,19 @@ defmodule Day05 do
   - The transformed range after applying all relevant transformations.
   """
   @spec traverse(Range.t(), [%{dest: integer(), src: integer(), len: integer()}], list) :: Range.t() | nil
-  def traverse(x..x, _, _), do: nil
   def traverse(range, [], maps), do: traverse(range, maps)
-  def traverse(first..last = range, [%{dest: dest, src: src, len: len} = line | lines], maps) do
+  def traverse(first..last = _range, [%{dest: dest, src: src, len: len} = _line | lines], maps) do
     if Range.disjoint?(first..last, src..(src + len)) do
-#      IO.puts("disjoint #{first}..#{last}, #{src}..#{src+len}")
       traverse(first..last, lines, maps)
       else
-#        if # TODO maps == [] then do_traverse or loacte
-        if maps == [] do
-          Enum.map(range, &do_traverse(&1, [ [line | lines] | maps]))
-        end
-        [traverse(min(first, src-1)..src-1, lines, maps),
+        [if (first < src-1) do traverse(first..src-1, lines, maps) end,
           traverse(get_new_range(max(first, src)..min(last, src + len - 1), dest, src, len), maps),
-          traverse(min(last,src+len)..last, lines, maps)]
+          if (src+len) < last do  traverse((src+len)..last, lines, maps) end]
       end
   end
 
-  def get_new_range(first..last, dest, src, _len) do
+  # Calculate the new range after applying a transformation.
+  defp get_new_range(first..last, dest, src, _len) do
     (first - src + dest)..(last - src + dest)
   end
 
@@ -184,8 +179,7 @@ defmodule Day05 do
 
     seeds_str
     |> parse_seeds # Parse the seeds from the input string
-    |> Enum.chunk_every(2) # Group every two elements (start and range) into a tuple
-    |> Enum.map(fn [start, range] -> start..(start + range - 1) end) # Convert tuples into ranges TODO: Or should I use tuples instead of ranges?
+    |> create_ranges() # Create ranges
     |> merge_overlapping # Merge any overlapping ranges to optimize
     |> Enum.map(&traverse(&1,maps)) # Apply transformations to each range
     |> List.flatten() # Flatten the list of transformed ranges into a single list
@@ -245,6 +239,13 @@ defmodule Day05 do
   def merge_ranges(first1..last1, _first2..last2) do
     first1..max(last1, last2)
 #    min(first1, first2)..max(last1, last2)
+  end
+
+  @spec create_ranges([integer]) :: [Range.t()]
+  def create_ranges(seeds) do
+    seeds
+    |> Enum.chunk_every(2) # Group every two elements (start and range) into a tuple
+    |> Enum.map(fn [start, range] -> start..(start + range - 1) end) # Convert tuples into ranges
   end
 
 end
