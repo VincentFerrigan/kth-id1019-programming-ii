@@ -1,26 +1,73 @@
 defmodule Day05 do
   @moduledoc """
   Documentation for `Day05`.
-  """
-  def part_1(file_path \\ "./input/sample") do
-    {:ok, input} = file_path |> File.read()
-    run_sample(input)
-  end
 
-  #  @spec run_sample(String.t()) :: [integer]
-  def run_sample(input) do
+  Provides solutions for the "Day 5" challenge, which involves navigating through transformations
+  applied to seeds and ranges. It includes functionality to parse input data, apply transformations,
+  and determine the lowest location number after applying a series of transformations as specified
+  by the challenge. It supports both individual seed processing and range-based processing for efficiency.
+  """
+
+  @doc """
+  Processes the input file for part 1 of the challenge, finding the lowest location number for individual seeds.
+
+  ## Parameters
+  - file_path: The path to the input file (default: "./input/sample").
+
+  ## Returns
+  - The lowest location number after applying transformations to the seeds.
+
+  ## Examples
+    iex> Day05.run_part_1("./input/sample")
+    35 # The lowest location number after transformations of the test-sample given in AOC
+  """
+  @spec run_part_1(String.t()) :: integer
+  def run_part_1(file_path \\ "./input/sample") do
+    # Read the input from the given file path. Default path is "./input/sample".
+    {:ok, input} = file_path |> File.read()
+    # Split the input into seeds and maps sections, each separated by double newlines, and trim any whitespace.
     [seeds_str | maps_str] = String.split input, "\n\n", trim: true
-    seeds = parse_seeds seeds_str
+
+    # Parse each transformation map from the maps section of the input.
     maps = Enum.map(maps_str, &parse_maps(&1))
-    Enum.map(seeds, &do_traverse(&1, maps)) |> Enum.min
+
+    seeds_str
+    |> parse_seeds # Parse the seeds from the input string
+    |> Enum.map(&do_traverse(&1, maps)) # For each seed, apply the series of transformations defined in the maps,
+    |> Enum.min # then find and return the minimum value among the resulting locations.
   end
 
   ## Parsing functions
-  # A string is a UTF-8 encoded binary.
-  @spec parse_seeds(String.t()) :: [integer]
-  def parse_seeds(<<"seeds: ", seeds_str::binary>>), do: parse_line(seeds_str)
+  @doc """
+  Parses a string of seeds into a list of integers.
 
-#  @spec parse_map([String.t()]) :: [integer]
+  ## Parameters
+  - seeds_str: A binary string starting with "seeds: " followed by the seeds.
+
+  ## Returns
+  - A list of seed integers.
+
+  ## Examples
+
+    iex> Day05.parse_seeds("seeds: 1 2 3 4 5")
+    [1, 2, 3, 4, 5]
+  """
+  @spec parse_seeds(String.t()) :: [integer]
+  def parse_seeds(<<"seeds: ", seeds_str::binary>>) do
+    # A string in Elixir is a UTF-8 encoded binary.
+    parse_line(seeds_str)
+  end
+
+  @doc """
+  Parses transformation maps from a string input.
+
+  ## Parameters
+  - input: A string containing transformation data.
+
+  ## Returns
+  - A list of maps each representing a transformation.
+  """
+  @spec parse_maps(String.t()) :: [%{dest: integer, src: integer, len: integer}]
   def parse_maps(input) do
     [_type | data] = String.split(input, "\n", trim: true)
     data
@@ -35,11 +82,38 @@ defmodule Day05 do
     |> Enum.map(&String.to_integer/1)
   end
 
+  @doc """
+  Applies transformations to a range of seeds and determines the new range after transformations.
+
+  ## Parameters
+  - range: The range of seeds to be transformed.
+  - maps: A list of transformation maps to apply.
+
+  ## Returns
+  - The transformed range as per the transformation maps.
+  """
+  @spec traverse(Range.t(), list) :: Range.t() | nil
   # wrapper that kicks off the traversing
   def traverse(range, []), do: range
   def traverse(range, [map|maps]), do: traverse(range, map, maps)
 
-  def traverse(x..x, _, _), do: nil # TODO osäker på denna
+  @doc """
+  Traverses through transformation maps for a given range, applying transformations sequentially.
+
+  This overloaded version of `traverse` takes an additional parameter for the current map being processed
+  and manages the recursive traversal through the maps for a given seed range. It applies transformations
+  based on the current map and continues with the rest, allowing for complex transformations across multiple maps.
+
+  ## Parameters
+  - range: The range of seeds to apply transformations to.
+  - maps: The list of maps that describe transformations.
+  - current_map: The current transformation map being processed.
+
+  ## Returns
+  - The transformed range after applying all relevant transformations.
+  """
+  @spec traverse(Range.t(), [%{dest: integer(), src: integer(), len: integer()}], list) :: Range.t() | nil
+  def traverse(x..x, _, _), do: nil
   def traverse(range, [], maps), do: traverse(range, maps)
   def traverse(first..last = range, [%{dest: dest, src: src, len: len} = line | lines], maps) do
     if Range.disjoint?(first..last, src..(src + len)) do
@@ -61,21 +135,20 @@ defmodule Day05 do
   end
 
 #   Traverse through all the maps
-  def do_traverse(num, []) when is_integer(num), do: num
-  def do_traverse(num, [map| maps]) when is_integer(num) do
+  defp do_traverse(num, []) when is_integer(num), do: num
+  defp do_traverse(num, [map| maps]) when is_integer(num) do
     do_traverse(locate(num, map), maps)
   end
 
   # Locate next destination for base cases
   def locate(num, []), do: num
 
+  # Overloaded locate for a list of map entries - this is where the iteration happens
+  def locate(num, maps) when is_list(maps), do: do_locate(num, maps)
   # Locate for a single map entry
   def locate(num, %{dest: dest, src: src, len: len}) do
     if num >= src and num < (src + len), do: (num - src + dest), else: nil
   end
-
-  # Overloaded locate for a list of map entries - this is where the iteration happens
-  def locate(num, maps) when is_list(maps), do: do_locate(num, maps)
 
   # Helper function for iteration
   defp do_locate(num, []), do: num # No match found after going through all maps
@@ -87,36 +160,51 @@ defmodule Day05 do
   end
 
   # part2
-  def part_2(file_path \\ "./input/sample") do
-    {:ok, input} = file_path |> File.read()
-    run_sample_2(input)
-  end
+  @doc """
+  Processes the input file for part 2 of the challenge, optimizing for ranges of seeds.
 
-  def run_sample_2(input) do
+  ## Parameters
+  - file_path: The path to the input file (default: "./input/sample").
+
+  ## Returns
+  - The lowest location number after applying transformations to the ranges of seeds.
+
+  ## Examples
+    iex> Day05.run_part_2("./input/sample")
+    46 # The lowest location number after transformations of the test-sample given in AOC
+  """
+  @spec run_part_2(String.t()) :: integer
+  def run_part_2(file_path \\ "./input/sample") do
+    # Read the input from the given file path. Default path is "./input/sample".
+    {:ok, input} = file_path |> File.read()
+    # Split the input into seeds and maps sections, trimming any leading/trailing whitespace
     [seeds_str | maps_str] = String.split input, "\n\n", trim: true
+    # Parse the transformation maps from the input
     maps = Enum.map(maps_str, &parse_maps(&1))
 
-    #TODO latest try
-    ranges = seeds_str
-             |> parse_seeds
-             |> Enum.chunk_every(2)
-             |> Enum.map(fn [start, range] -> start..(start + range - 1) end)
-             |> merge_overlapping
-
-    ##TODO latest try
-      ## ALT 1
-      ranges
-      |> Enum.map(&traverse(&1,maps))
-
-      ## final
-      |> List.flatten()
-      |> Enum.filter(fn x -> x != nil end)
-      |> Enum.min()
-      |> Enum.min()
+    seeds_str
+    |> parse_seeds # Parse the seeds from the input string
+    |> Enum.chunk_every(2) # Group every two elements (start and range) into a tuple
+    |> Enum.map(fn [start, range] -> start..(start + range - 1) end) # Convert tuples into ranges TODO: Or should I use tuples instead of ranges?
+    |> merge_overlapping # Merge any overlapping ranges to optimize
+    |> Enum.map(&traverse(&1,maps)) # Apply transformations to each range
+    |> List.flatten() # Flatten the list of transformed ranges into a single list
+    |> Enum.filter(fn x -> x != nil end) # Filter out any nil values
+    |> Enum.min() # Find the minimum range in the list
+    |> Enum.min() # Get the minimum value in the range
   end
 
   # TODO Don't know if necessary, but this filters out all ranges that overalap.
   # TODO Should I use it here and/or elsewhere?
+  @doc """
+  Merges overlapping ranges into a single range for efficiency.
+
+  ## Parameters
+  - ranges: A list of ranges.
+
+  ## Returns
+  - A list of merged ranges, with no overlaps.
+  """
   def merge_overlapping(ranges) do
     ranges
     |> Enum.sort # Sort ranges by their start value
@@ -138,7 +226,22 @@ defmodule Day05 do
     end
   end
 
-  # Merges two ranges
+  @doc """
+  Merges two ranges into a single range.
+
+  ## Parameters
+  - first: The first range to merge.
+  - second: The second range to merge.
+
+  ## Returns
+  - The resulting merged range.
+
+  ## Examples
+
+    iex> Day05.merge_ranges(1..5, 4..10)
+    1..10
+  """
+  @spec merge_ranges(Range.t(), Range.t()) :: Range.t()
   def merge_ranges(first1..last1, _first2..last2) do
     first1..max(last1, last2)
 #    min(first1, first2)..max(last1, last2)
