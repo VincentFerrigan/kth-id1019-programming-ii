@@ -1,0 +1,271 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+\title{
+    AOC, DAY 5
+    \\Ranges
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+\date{\today}
+
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+This assignment, based on the Advent of Code 2023 Day 5 problem, is structured into two main tasks.
+The objective of the first task is to process a set of inputs (seeds and transformation maps)
+to determine the lowest \emph{location number} of the seeds.
+One will need to parse input strings into a usable data structure,
+then implement and apply transformations based on the provided maps
+(seed-to-soil, soil-to-fertilizer, etc.) to find the lowest location number.
+The second task requires one to
+adapt the solution from the first task to handle ranges of seeds instead of individual numbers,
+optimizing for performance with potentially millions of seeds.
+
+This requires one to
+implement a new data structure, to efficiently represent and manipulate sequences of ranges.
+Functions that not only handle transformations but also set operations for these ranges
+(e.g. union, intersection, difference etc) need to be created.
+
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/6/day05}{Repo Programming II - Day05}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+For exploration and benchmarking, the interactive environment and notebook
+\href{https://livebook.dev/}{\emph{Livebook}}
+was heavily used.
+
+\subsubsection*{Test Driven Development}\label{sec:ttd}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+For example, before creating ranges for part II,
+one can first write a couple of test cases, as illustrated in the test-example below.
+%TODO.
+\inputminted[
+    label=AUX TESTS,
+    firstline=5,
+    lastline=12,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/day05_test.exs}
+One can also set up tests for the sample data, given by Advent of Code, prior to coding.
+\inputminted[
+    label=SAMPLE TESTS,
+    firstline=14,
+    lastline=17,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/day05_test.exs}
+\noindent The
+\mintinline{elixir}{run_sample/1},
+
+\section*{Result}
+\label{sec:result}
+Since all
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/6/day05/lib/day05.ex}{code (lib/day12.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/6/day05/test/da015_test.exs}{tests (test/day12\_test.exs)}
+can be found on the author's
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)},
+this section will only give a brief overview for each part.
+%TODO write what
+%a simplified view of the brute-force solution's algorithm's logic.
+
+\subsection*{Part I}
+Part I processes seeds through multiple transformation maps sequentially.
+\inputminted[
+    label=run_part_1/1,
+    firstline=24,
+    lastline=37,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day05.ex}
+\inputminted[
+    label=iex run_part_1/1,
+    firstline=21,
+    lastline=22,
+    xleftmargin=-6mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day05.ex}
+Starting from
+\mintinline{elixir}{run_part_1/1},
+it reads the seeds and maps from the input, then for each seed:
+\begin{enumerate}
+    \item Parse Seeds and Maps:
+    Converts the seed and transformation maps strings into structured data.
+    \item Apply Transformations Sequentially: For each seed, it traverses through each map (seed-to-soil, soil-to-fertilizer, etc.), applying the respective transformation based on the mapping rules. This involves finding the appropriate transformation for the seed value in each map and calculating the new seed value.
+    \item Find Minimum Location Number: After applying all transformations to each seed, the process identifies the lowest resulting location number among all seeds.
+\end{enumerate}
+
+This approach is direct but not optimized for handling ranges,
+leading to the necessity for a different strategy in Part II.
+
+%    \inputminted[
+%        label=brute_force_solve/2,
+%        firstline=111,
+%        lastline=114,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+%    \inputminted[
+%        label=iex brute_force_solve/2,
+%        firstline=108,
+%        lastline=109,
+%        xleftmargin=-6mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+
+\subsection*{Part II}
+\inputminted[
+    label=run_part_2/1,
+    firstline=171,
+    lastline=189,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day05.ex}
+
+\inputminted[
+    label=iex run_part_2/1,
+    firstline=168,
+    lastline=169,
+    xleftmargin=-6mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day05.ex}
+
+The process, kicked off by
+\mintinline{elixir}{run_part_2}, includes parsing the input into structured data for seeds and
+transformation maps.
+The structured data for these seeds are of the
+\mintinline{elixir}{`Range.t()`} type.
+Which is performed by the
+\mintinline{elixir}{create_ranges/1} function.
+\inputminted[
+    label=create/2,
+    firstline=244,
+    lastline=249,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/day05.ex}
+
+To optimize processing, overlapping ranges are merged into single ranges.
+This is done by sorting the ranges and then merging any that overlap.
+
+\subsubsection*{Applying Transformation}
+For each range,
+transformations are applied based on the parsed maps.
+This involves checking for overlaps between the range and the transformation maps, and then calculating new ranges based on the transformations.
+This process might split ranges into smaller ones or adjust their start and end points according to the transformation rules.
+
+    \inputminted[
+        label=traverse/2,
+        firstline=95,
+        lastline=98,
+        xleftmargin=-3mm,  % Adjust this value as needed
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/day05.ex}
+
+    \inputminted[
+        label=traverse/3,
+        firstline=115,
+        lastline=130,
+        xleftmargin=-6mm,  % Adjust this value as needed
+        fontsize=\footnotesize,
+    ]{elixir}{../lib/day05.ex}
+
+After applying all transformations, the resulting list of ranges may contain nested lists or nil values.
+These are flattened into a single list, and nil values are filtered out.
+
+Finally, it calculates the lowest location number from the transformed ranges.
+
+\section*{Discussion}\label{sec:discussion}
+The key difference between the solutions for part I and part II lies in how they handle
+the input data and apply transformations.
+Part 1 processes individual seeds,
+applying transformations to each seed and determining the lowest location number through a direct,
+sequential approach.
+It utilizes functions like
+\mintinline{elixir}{do_traverse} and
+\mintinline{elixir}{locate} for this purpose, focusing on one seed at a time.
+
+Part 2, on the other hand, is optimized for handling ranges of seeds.
+It introduces a more complex logic to manage and transform ranges efficiently,
+avoiding processing each seed individually.
+This includes merging overlapping ranges with
+\mintinline{elixir}{`merge:overlapping/1`} and applying transformations to entire ranges at once.
+The traverse functions
+(\mintinline{elixir}{traverse/2} and
+\mintinline{elixir}{traverse/3})
+in part II are specifically designed to work with these ranges,
+employing logic to split and manipulate ranges based on the transformations,
+which differs significantly from the item-by-item approach in part II.
+
+Optimizing for part II was important due to the scale and efficiency needed when dealing with potentially millions of seeds.
+Using
+\mintinline{elixir}{do_traverse} and
+\mintinline{elixir}{locate}
+for individual seeds, as in part I, would become impractical for part II because
+processing each seed one by one would result in significant computational overhead and time complexity.
+By handling ranges of seeds, one can apply transformations to large groups of seeds simultaneously,
+significantly reducing the number of operations needed.
+This approach leverages the patterns in the input data to optimize processing,
+making it feasible to handle large datasets efficiently.
+\end{document}
