@@ -18,9 +18,7 @@ defmodule Day05 do
   ## Parsing functions
   # A string is a UTF-8 encoded binary.
   @spec parse_seeds(String.t()) :: [integer]
-  def parse_seeds(<<"seeds: ", seeds_str::binary>>) do
-    parse_line(seeds_str)
-  end
+  def parse_seeds(<<"seeds: ", seeds_str::binary>>), do: parse_line(seeds_str)
 
 #  @spec parse_map([String.t()]) :: [integer]
   def parse_maps(input) do
@@ -50,55 +48,34 @@ defmodule Day05 do
       else
 #        if # TODO maps == [] then do_traverse or loacte
         if maps == [] do
-#          IO.puts("Last one")
-#          IO.inspect(range)
-#          IO.inspect(line)
           Enum.map(range, &do_traverse(&1, [ [line | lines] | maps]))
         end
-#        IO.puts("concat #{first}..#{last}, #{src}..#{src+len}")
         [traverse(min(first, src-1)..src-1, lines, maps),
           traverse(get_new_range(max(first, src)..min(last, src + len - 1), dest, src, len), maps),
-#          Enum.map(max(first, src)..min(last, src + len - 1), &do_traverse(&1, [line | [map|maps]])) |> Enum.min,
           traverse(min(last,src+len)..last, lines, maps)]
-#        |> List.flatten()
-#        |> Enum.filter(&is_number(&1))
-#        |> Enum.filter(&is_number(&1))
-#        |> Enum.min
       end
   end
 
   def get_new_range(first..last, dest, src, _len) do
-#    IO.inspect(first..last) # Debugging
-#    IO.inspect((first - src + dest)..(last - src + dest)) # Debugging
     (first - src + dest)..(last - src + dest)
   end
 
 #   Traverse through all the maps
-  def do_traverse(num, []) when is_integer(num) do
-#    IO.puts("last num: #{num}\n")
-    num
-  end
-
+  def do_traverse(num, []) when is_integer(num), do: num
   def do_traverse(num, [map| maps]) when is_integer(num) do
     do_traverse(locate(num, map), maps)
   end
 
   # Locate next destination for base cases
   def locate(num, []), do: num
-#  def locate(_num, [x]), do: IO.inspect(x)
 
   # Locate for a single map entry
   def locate(num, %{dest: dest, src: src, len: len}) do
-#    IO.puts("do trav in map #{num}")
-#    IO.puts("do trav #{src}..#{src+len}")
     if num >= src and num < (src + len), do: (num - src + dest), else: nil
   end
 
   # Overloaded locate for a list of map entries - this is where the iteration happens
-  def locate(num, maps) when is_list(maps) do
-#    IO.puts("do trav is list #{num}")
-    do_locate(num, maps)
-  end
+  def locate(num, maps) when is_list(maps), do: do_locate(num, maps)
 
   # Helper function for iteration
   defp do_locate(num, []), do: num # No match found after going through all maps
@@ -108,10 +85,6 @@ defmodule Day05 do
       match -> match # Match found, return it immediately
     end
   end
-
-#  def locate(num, map) do
-#    locate(num, Enum.map(map, &locate(num, &1)) |> Enum.filter(&is_integer/1))
-#  end
 
   # part2
   def part_2(file_path \\ "./input/sample") do
@@ -131,28 +104,19 @@ defmodule Day05 do
              |> merge_overlapping
 
     ##TODO latest try
+      ## ALT 1
       ranges
-#      |> Enum.map(&traverse(&1,maps))
+      |> Enum.map(&traverse(&1,maps))
 
-      |> Enum.map(fn x ->
-        Task.async(fn ->
-          traverse(x, maps) end)
-      end)
-      |> Enum.map(&Task.await(&1, 20_000)) # Await each traverse task
-
-# TODO, filterera bort tomma [], ta ut min.
-#      |> Enum.concat()
-#      |> Enum.filter(fn x -> is_integer(hd(x)) end)
-#      |> IO.inspect()
+      ## final
       |> List.flatten()
       |> Enum.filter(fn x -> x != nil end)
       |> Enum.min()
       |> Enum.min()
-
-#      |> Enum.min() # Find the minimum of the results
-#      |> hd
   end
 
+  # TODO Don't know if necessary, but this filters out all ranges that overalap.
+  # TODO Should I use it here and/or elsewhere?
   def merge_overlapping(ranges) do
     ranges
     |> Enum.sort # Sort ranges by their start value
@@ -173,11 +137,6 @@ defmodule Day05 do
       [merged | rest]
     end
   end
-
-#  # Checks if two ranges overlap
-#  defp range_overlap?(range1, range2) do
-#    Enum.max(range1) >= Enum.min(range2) and Enum.min(range1) <= Enum.max(range2)
-#  end
 
   # Merges two ranges
   def merge_ranges(first1..last1, _first2..last2) do
