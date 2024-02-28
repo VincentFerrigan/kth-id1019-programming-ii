@@ -19,22 +19,18 @@ defmodule Day05 do
 
   ## Examples
     iex> Day05.run_part_1("./input/sample")
-    35 # The lowest location number after transformations of the test-sample given in AOC
+    35
   """
   @spec run_part_1(String.t()) :: integer
   def run_part_1(file_path \\ "./input/sample") do
-    # Read the input from the given file path. Default path is "./input/sample".
     {:ok, input} = file_path |> File.read()
-    # Split the input into seeds and maps sections, each separated by double newlines, and trim any whitespace.
     [seeds_str | maps_str] = String.split input, "\n\n", trim: true
-
-    # Parse each transformation map from the maps section of the input.
     maps = Enum.map(maps_str, &parse_maps(&1))
 
     seeds_str
-    |> parse_seeds # Parse the seeds from the input string
-    |> Enum.map(&do_traverse(&1, maps)) # For each seed, apply the series of transformations defined in the maps,
-    |> Enum.min # then find and return the minimum value among the resulting locations.
+    |> parse_seeds
+    |> Enum.map(&do_traverse(&1, maps))
+    |> Enum.min
   end
 
   ## Parsing functions
@@ -93,7 +89,6 @@ defmodule Day05 do
   - The transformed range as per the transformation maps.
   """
   @spec traverse(Range.t(), list) :: Range.t() | nil
-  # wrapper that kicks off the traversing
   def traverse(range, []), do: range
   def traverse(range, [map|maps]), do: traverse(range, map, maps)
 
@@ -112,14 +107,18 @@ defmodule Day05 do
   ## Returns
   - The transformed range after applying all relevant transformations.
   """
-  @spec traverse(Range.t(), [%{dest: integer(), src: integer(), len: integer()}], list) :: Range.t() | nil
+  @spec traverse(Range.t(),
+        [%{dest: integer(), src: integer(), len: integer()}], list) :: Range.t() | nil
   def traverse(range, [], maps), do: traverse(range, maps)
-  def traverse(first..last = _range, [%{dest: dest, src: src, len: len} = _line | lines], maps) do
+  def traverse(first..last = _range,
+        [%{dest: dest, src: src, len: len} = _line | lines],
+        maps) do
     if Range.disjoint?(first..last, src..(src + len)) do
       traverse(first..last, lines, maps)
       else
         [if (first < src-1) do traverse(first..src-1, lines, maps) end,
-          traverse(get_new_range(max(first, src)..min(last, src + len - 1), dest, src, len), maps),
+          traverse(get_new_range(max(first, src)..min(last, src + len - 1),
+            dest, src, len), maps),
           if (src+len) < last do  traverse((src+len)..last, lines, maps) end]
       end
   end
@@ -166,13 +165,13 @@ defmodule Day05 do
 
   ## Examples
     iex> Day05.run_part_2("./input/sample")
-    46 # The lowest location number after transformations of the test-sample given in AOC
+    46
   """
   @spec run_part_2(String.t()) :: integer
   def run_part_2(file_path \\ "./input/sample") do
     # Read the input from the given file path. Default path is "./input/sample".
     {:ok, input} = file_path |> File.read()
-    # Split the input into seeds and maps sections, trimming any leading/trailing whitespace
+    # Split input into seeds & maps sections, trimming any trailing whitespace
     [seeds_str | maps_str] = String.split input, "\n\n", trim: true
     # Parse the transformation maps from the input
     maps = Enum.map(maps_str, &parse_maps(&1))
@@ -244,8 +243,8 @@ defmodule Day05 do
   @spec create_ranges([integer]) :: [Range.t()]
   def create_ranges(seeds) do
     seeds
-    |> Enum.chunk_every(2) # Group every two elements (start and range) into a tuple
-    |> Enum.map(fn [start, range] -> start..(start + range - 1) end) # Convert tuples into ranges
+    |> Enum.chunk_every(2)
+    |> Enum.map(fn [start, range] -> start..(start + range - 1) end)
   end
 
 end

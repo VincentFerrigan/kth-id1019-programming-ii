@@ -41,8 +41,7 @@
 }
 \author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
 
-\date{\today}
-
+\date{23 february 2024}
 \maketitle
 
 \section*{Introduction}
@@ -116,8 +115,8 @@ One can also set up tests for the sample data, given by Advent of Code, prior to
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../test/day05_test.exs}
-\noindent The
-\mintinline{elixir}{run_sample/1},
+%\noindent The
+%\mintinline{elixir}{run_sample/1},
 
 \section*{Result}
 \label{sec:result}
@@ -135,7 +134,7 @@ Part I processes seeds through multiple transformation maps sequentially.
 \inputminted[
     label=run_part_1/1,
     firstline=24,
-    lastline=37,
+    lastline=34,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day05.ex}
@@ -143,7 +142,7 @@ Part I processes seeds through multiple transformation maps sequentially.
     label=iex run_part_1/1,
     firstline=21,
     lastline=22,
-    xleftmargin=-6mm,  % Adjust this value as needed
+    xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day05.ex}
 Starting from
@@ -170,24 +169,24 @@ leading to the necessity for a different strategy in Part II.
 %        label=iex brute_force_solve/2,
 %        firstline=108,
 %        lastline=109,
-%        xleftmargin=-6mm,  % Adjust this value as needed
+%        xleftmargin=-3mm,  % Adjust this value as needed
 %        fontsize=\footnotesize,
 %    ]{elixir}{../lib/day05.ex}
 
 \subsection*{Part II}
 \inputminted[
     label=run_part_2/1,
-    firstline=171,
-    lastline=189,
+    firstline=170,
+    lastline=188,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day05.ex}
 
 \inputminted[
     label=iex run_part_2/1,
-    firstline=168,
-    lastline=169,
-    xleftmargin=-6mm,  % Adjust this value as needed
+    firstline=167,
+    lastline=168,
+    xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day05.ex}
 
@@ -200,8 +199,8 @@ Which is performed by the
 \mintinline{elixir}{create_ranges/1} function.
 \inputminted[
     label=create/2,
-    firstline=244,
-    lastline=249,
+    firstline=243,
+    lastline=248,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/day05.ex}
@@ -217,17 +216,17 @@ This process might split ranges into smaller ones or adjust their start and end 
 
     \inputminted[
         label=traverse/2,
-        firstline=95,
-        lastline=98,
+        firstline=91,
+        lastline=93,
         xleftmargin=-3mm,  % Adjust this value as needed
         fontsize=\footnotesize,
     ]{elixir}{../lib/day05.ex}
 
     \inputminted[
         label=traverse/3,
-        firstline=115,
-        lastline=130,
-        xleftmargin=-6mm,  % Adjust this value as needed
+        firstline=110,
+        lastline=129,
+        xleftmargin=-3mm,  % Adjust this value as needed
         fontsize=\footnotesize,
     ]{elixir}{../lib/day05.ex}
 
