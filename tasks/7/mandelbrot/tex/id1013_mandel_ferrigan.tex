@@ -1,0 +1,378 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+\title{
+    Mandelbrot
+    \\Ranges
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+\date{23 february 2024}
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+This assignment is about implementing a Mandelbrot set generator in
+Elixir, which will ultimately produce an image of the Mandelbrot set. 
+The steps outlined in the document are as follows:
+\begin{enumerate}
+    \item~\hyperref[subsec:cmplx]{Complex Numbers Module}: Implement a module to handle complex numbers,
+    including functions for creating new complex numbers, adding two complex
+    numbers, squaring a complex number, and finding the absolute value of a
+    complex number.
+    \item~\hyperref[subsec:brot]{Mandelbrot Computation Module}: Implement the core logic to determine
+    if a given complex number belongs to the Mandelbrot set based on a maximum
+    iteration depth.
+    This involves calculating the sequence of complex numbers
+    and checking if their absolute values exceed a certain threshold before
+    reaching the maximum number of iterations.
+    \item Image Generation: Using the PPM module to generate an image file from
+    the calculated data.
+    This involves translating the iterations needed to
+    determine if a complex number belongs to the Mandelbrot set into color
+    values to produce visual output.
+    \item~\hyperref[subsec:color]{Color Module}: Implement a module to convert the depth (number of
+    iterations) to RGB color values, which will be used to color the Mandelbrot
+    image.
+    \item Mandelbrot Set Generation: Combine all the above to generate the
+    Mandelbrot set over a defined area and resolution, and save this as an image
+    using the PPM module.
+\end{enumerate}
+This assignment is based on the instruction
+\href{https://people.kth.se/~johanmon/courses/id1019/seminars/mandel/mandel.pdf}{'Generating a Mandelbrot Image'}
+by course examiner Johan Montelius.
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot}{Repo Programming II - Mandelbrot}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+% For exploration and benchmarking, the interactive environment and notebook
+% \href{https://livebook.dev/}{\emph{Livebook}}
+% was heavily used.
+
+\subsubsection*{Test Driven Development}\label{sec:ttd}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+For example, before creating all the necessary functions for the
+\mintinline{elixir}{Cmplx} module,
+one can first write a couple of test cases, as illustrated in the test-example below.
+%TODO.
+\inputminted[
+    label=CMPLX TESTS,
+    firstline=5,
+    lastline=11,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/cmplx_test.exs}
+\noindent The
+\mintinline{elixir}{sqr/1} function is supposed to square the complex number
+$1 + 2i$, where $i$
+is the imaginary unit, with the formula for squaring binomials
+$(a + bi)^2$ -- which is \(a^2+2abi-b^2\), noting that $i^2 = -1$.
+\noindent So for $1 + 2i$:
+\[(1 + 2i)^2 = 1^2 + 2 \cdot 1 \cdot 2i + (2i)^2 = 1 + 4i - 4 = -3 + 4i\]
+Which the test above is to assert.
+
+The function was therefore created as follows:
+\inputminted[
+    label=sqr/1,
+    firstline=42,
+    lastline=45,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+
+\subsection*{Complex Numbers Module}
+\label{subsec:cmplx}
+The module
+\mintinline{elixir}{Cmplx},
+is designed to handle basic operations with complex numbers,
+which are represented as tuples
+\mintinline{elixir}{{:cpx, real, imag}}, where
+\mintinline{elixir}{`real`} is the real part and
+\mintinline{elixir}{`imag`} is the imaginary part of the complex number.
+Since this entire module can be found on
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/lib/cmplx.ex}{GitHub (lib/cmplx.ex)}
+I will only go through the module's most important function;
+\mintinline{elixir}{Cmplx.abs/1}.
+It calculates the absolute
+value (magnitude) of a complex number -- i.e.
+the distance of the complex number from the origin in the complex plane.
+% TODO: Gör fan alla, men skriv att du redan gått igenom sqr i subsectionen innan.
+\inputminted[
+    label=abs/1,
+    firstline=54,
+    lastline=57,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\inputminted[
+    label=iex abs/1,
+    firstline=51,
+    lastline=52,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+
+%This value is essential for determining the escape time of points in the Mandelbrot set calculation.
+%The absolute value is used to test if the iterative computation should terminate.
+\subsection*{Mandelbrot Computation Module}
+\label{subsec:brot}
+The
+\mintinline{elixir}{Brot} module
+focuses on the computation aspect.
+It determines whether a point belongs to the Mandelbrot set
+based on the iteration depth and complex number calculations.
+It implements the core algorithm that performs the iterative calculation
+to check if a given complex number escapes the set within a certain number
+of iterations.
+
+The Mandelbrot set is defined by a simple mathematical formula applied to complex numbers.
+For each point $c$ in the complex plane, we iterate the formula
+\(z_{n+1} = z^2_n + c\), starting with $z_{0}=0$.
+A point $c$ is considered part of the Mandelbrot set if,
+after an infinite number of iterations, the value of
+$z$ does not escape to infinity.
+
+In practice, we cannot iterate infinitely,
+so we set a maximum number of iterations
+\mintinline{elixir}{`max_iterations`} to decide whether
+$z$ escapes or not.
+\inputminted[
+    label=Brot.mandelbrot/1,
+    firstline=41,
+    lastline=56,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+
+\noindent As shown in the helper function
+\mintinline{elixir}{perform_iteration},
+if $|z|$ becomes greater than our threshold $2$
+before hitting the maximum iteration count, we consider
+$c$ not part of the set.
+The number of iterations it takes for
+$z$ to escape gives us a way to color points not in the set,
+creating the beautiful fractal images associated with the Mandelbrot set.
+
+\subsection*{Color Module}
+\label{subsec:color}
+The
+\mintinline{elixir}{Color} module is designed to map numerical values,
+specifically the number of iterations it takes for a point to escape
+(or be determined outside) the Mandelbrot set, to color values.
+This mapping is essential for visualizing the Mandelbrot set,
+where different colors can represent the ''speed'' at which points escape
+to infinity, providing a visual cue to the complexity and boundary of the set.
+
+\section*{Result}
+\label{sec:result}
+Since all
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/}{code (lib/)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/test/}{tests (test/)}
+can be found on the author's
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)},
+this section will only give a brief overview.
+
+
+
+%TODO write what
+%a simplified view of the brute-force solution's algorithm's logic.
+
+%\subsection*{Complex Numbers Module}
+%Part I processes seeds through multiple transformation maps sequentially.
+%\inputminted[
+%    label=run_part_1/1,
+%    firstline=24,
+%    lastline=34,
+%    xleftmargin=-3mm,  % Adjust this value as needed
+%    fontsize=\footnotesize,
+%]{elixir}{../lib/day05.ex}
+%\inputminted[
+%    label=iex run_part_1/1,
+%    firstline=21,
+%    lastline=22,
+%    xleftmargin=-3mm,  % Adjust this value as needed
+%    fontsize=\footnotesize,
+%]{elixir}{../lib/day05.ex}
+%Starting from
+%\mintinline{elixir}{run_part_1/1},
+%it reads the seeds and maps from the input, then for each seed:
+%\begin{enumerate}
+%    \item Parse Seeds and Maps:
+%    Converts the seed and transformation maps strings into structured data.
+%    \item Apply Transformations Sequentially: For each seed, it traverses through each map (seed-to-soil, soil-to-fertilizer, etc.), applying the respective transformation based on the mapping rules. This involves finding the appropriate transformation for the seed value in each map and calculating the new seed value.
+%    \item Find Minimum Location Number: After applying all transformations to each seed, the process identifies the lowest resulting location number among all seeds.
+%\end{enumerate}
+%
+%This approach is direct but not optimized for handling ranges,
+%leading to the necessity for a different strategy in Part II.
+%
+%%    \inputminted[
+%%        label=brute_force_solve/2,
+%%        firstline=111,
+%%        lastline=114,
+%%        xleftmargin=-3mm,  % Adjust this value as needed
+%%        fontsize=\footnotesize,
+%%    ]{elixir}{../lib/day05.ex}
+%%    \inputminted[
+%%        label=iex brute_force_solve/2,
+%%        firstline=108,
+%%        lastline=109,
+%%        xleftmargin=-3mm,  % Adjust this value as needed
+%%        fontsize=\footnotesize,
+%%    ]{elixir}{../lib/day05.ex}
+%
+%\subsection*{Part II}
+%\inputminted[
+%    label=run_part_2/1,
+%    firstline=170,
+%    lastline=188,
+%    xleftmargin=-3mm,  % Adjust this value as needed
+%    fontsize=\footnotesize,
+%]{elixir}{../lib/day05.ex}
+%
+%\inputminted[
+%    label=iex run_part_2/1,
+%    firstline=167,
+%    lastline=168,
+%    xleftmargin=-3mm,  % Adjust this value as needed
+%    fontsize=\footnotesize,
+%]{elixir}{../lib/day05.ex}
+%
+%The process, kicked off by
+%\mintinline{elixir}{run_part_2}, includes parsing the input into structured data for seeds and
+%transformation maps.
+%The structured data for these seeds are of the
+%\mintinline{elixir}{`Range.t()`} type.
+%Which is performed by the
+%\mintinline{elixir}{create_ranges/1} function.
+%\inputminted[
+%    label=create/2,
+%    firstline=243,
+%    lastline=248,
+%    xleftmargin=-3mm,  % Adjust this value as needed
+%    fontsize=\footnotesize,
+%]{elixir}{../lib/day05.ex}
+%
+%To optimize processing, overlapping ranges are merged into single ranges.
+%This is done by sorting the ranges and then merging any that overlap.
+%
+%\subsubsection*{Applying Transformation}
+%For each range,
+%transformations are applied based on the parsed maps.
+%This involves checking for overlaps between the range and the transformation maps, and then calculating new ranges based on the transformations.
+%This process might split ranges into smaller ones or adjust their start and end points according to the transformation rules.
+%
+%    \inputminted[
+%        label=traverse/2,
+%        firstline=91,
+%        lastline=93,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+%
+%    \inputminted[
+%        label=traverse/3,
+%        firstline=110,
+%        lastline=129,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+%
+%After applying all transformations, the resulting list of ranges may contain nested lists or nil values.
+%These are flattened into a single list, and nil values are filtered out.
+%
+%Finally, it calculates the lowest location number from the transformed ranges.
+
+\section*{Discussion}\label{sec:discussion}
+%The key difference between the solutions for part I and part II lies in how they handle
+%the input data and apply transformations.
+%Part 1 processes individual seeds,
+%applying transformations to each seed and determining the lowest location number through a direct,
+%sequential approach.
+%It utilizes functions like
+%\mintinline{elixir}{do_traverse} and
+%\mintinline{elixir}{locate} for this purpose, focusing on one seed at a time.
+%
+%Part 2, on the other hand, is optimized for handling ranges of seeds.
+%It introduces a more complex logic to manage and transform ranges efficiently,
+%avoiding processing each seed individually.
+%This includes merging overlapping ranges with
+%\mintinline{elixir}{`merge:overlapping/1`} and applying transformations to entire ranges at once.
+%The traverse functions
+%(\mintinline{elixir}{traverse/2} and
+%\mintinline{elixir}{traverse/3})
+%in part II are specifically designed to work with these ranges,
+%employing logic to split and manipulate ranges based on the transformations,
+%which differs significantly from the item-by-item approach in part II.
+%
+%Optimizing for part II was important due to the scale and efficiency needed when dealing with potentially millions of seeds.
+%Using
+%\mintinline{elixir}{do_traverse} and
+%\mintinline{elixir}{locate}
+%for individual seeds, as in part I, would become impractical for part II because
+%processing each seed one by one would result in significant computational overhead and time complexity.
+%By handling ranges of seeds, one can apply transformations to large groups of seeds simultaneously,
+%significantly reducing the number of operations needed.
+%This approach leverages the patterns in the input data to optimize processing,
+%making it feasible to handle large datasets efficiently.
+\end{document}
