@@ -27,9 +27,11 @@ defmodule MandelbrotGenerator do
       #iex> MandelbrotGenerator.mandelbrot(800, 600, -0.5, 0.0, 0.005, 100, :red)
       #[[{:rgb, 0, 0, 0}, ..., ...], ...]
   """
-  @spec mandelbrot(integer(), integer(), number(), number(), number(), integer(), atom()) ::
+  @spec mandelbrot(integer(), integer(), number(), number(),
+          number(), integer(), atom()) ::
           list(list({:rgb, integer(), integer(), integer()}))
-  def mandelbrot(width, height, x_center, y_center, scale, max_iterations, color_scheme \\ :red) do
+  def mandelbrot(width, height, x_center, y_center,
+        scale, max_iterations, color_scheme \\ :red) do
     # Translates pixel positions to complex numbers
     complex_translator = fn(pixel_x, pixel_y) ->
       Cmplx.new(x_center + scale * (pixel_x - 1), y_center - scale * (pixel_y - 1))
@@ -37,7 +39,9 @@ defmodule MandelbrotGenerator do
 
     # Generate a task for each row to calculate in parallel
     tasks = for row_num <- 1..height do
-      Task.async(fn -> process_row(width, row_num, complex_translator, max_iterations, color_scheme) end)
+      Task.async(fn ->
+        process_row(width, row_num, complex_translator, max_iterations, color_scheme)
+      end)
     end
 
     # Wait for all tasks to complete and collect the rows of RGB values
@@ -45,7 +49,8 @@ defmodule MandelbrotGenerator do
     |> Enum.reverse()
   end
 
-  # Processes a single row of pixels, calculating the color for each pixel based on Mandelbrot set membership
+  # Processes a single row of pixels, calculating the color for each pixel based on
+  # Mandelbrot set membership
   defp process_row(width, row_num, complex_translator, max_iterations, color_scheme) do
     for col_num <- 1..width do
       # Translate pixel position to a complex number
