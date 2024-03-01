@@ -65,6 +65,7 @@ The steps outlined in the document are as follows:
     This involves translating the iterations needed to
     determine if a complex number belongs to the Mandelbrot set into color
     values to produce visual output.
+    This module was given by the course.
     \item~\hyperref[subsec:color]{Color Module}: Implement a module to convert the depth (number of
     iterations) to RGB color values, which will be used to color the Mandelbrot
     image.
@@ -130,13 +131,19 @@ $(a + bi)^2$ -- which is \(a^2+2abi-b^2\), noting that $i^2 = -1$.
 \noindent So for $1 + 2i$:
 \[(1 + 2i)^2 = 1^2 + 2 \cdot 1 \cdot 2i + (2i)^2 = 1 + 4i - 4 = -3 + 4i\]
 Which the test above is to assert.
-
 The function was therefore created as follows:
 \inputminted[
     label=sqr/1,
-    firstline=42,
-    lastline=45,
+    firstline=47,
+    lastline=50,
     xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\inputminted[
+    label=iex sqr/1,
+    firstline=44,
+    lastline=45,
+    xleftmargin=-10mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/cmplx.ex}
 
@@ -144,31 +151,75 @@ The function was therefore created as follows:
 \label{subsec:cmplx}
 The module
 \mintinline{elixir}{Cmplx},
-is designed to handle basic operations with complex numbers,
-which are represented as tuples
+is designed to handle basic operations with complex numbers.
+\inputminted[
+    label=cpx,
+    firstline=12,
+    lastline=12,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\noindent These numbers are represented as tuples,
 \mintinline{elixir}{{:cpx, real, imag}}, where
-\mintinline{elixir}{`real`} is the real part and
-\mintinline{elixir}{`imag`} is the imaginary part of the complex number.
-Since this entire module can be found on
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/lib/cmplx.ex}{GitHub (lib/cmplx.ex)}
-I will only go through the module's most important function;
-\mintinline{elixir}{Cmplx.abs/1}.
+\mintinline{elixir}{real} is the real part and
+\mintinline{elixir}{imag} is the imaginary part of the complex number.
+The
+\mintinline{elixir}{:cpx}
+tag is used to explicitly identify the tuple as representing a complex number.
+\mintinline{elixir}{Cmplx.new/2}
+creates a new complex number, given its real and imaginary parts
+while
+\mintinline{elixir}{Cmplx.add/2} adds two complex numbers.
+The addition is performed by adding the real parts and the imaginary parts separately.
+\inputminted[
+    label=new/2,
+    firstline=25,
+    lastline=26,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\inputminted[
+    label=iex new/2,
+    firstline=22,
+    lastline=23,
+    xleftmargin=-10mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\inputminted[
+    label=add/2,
+    firstline=35,
+    lastline=38,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+\inputminted[
+    label=iex add/2,
+    firstline=32,
+    lastline=33,
+    xleftmargin=-10mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/cmplx.ex}
+The function for squaring complex numbers,
+\mintinline{elixir}{Cmplx.sqr/1},
+was demonstrated in the previous subsection above.
+The last function,
+\mintinline{elixir}{Cmplx.abs/1},
+operates on a single complex number.
 It calculates the absolute
-value (magnitude) of a complex number -- i.e.
-the distance of the complex number from the origin in the complex plane.
-% TODO: Gör fan alla, men skriv att du redan gått igenom sqr i subsectionen innan.
+value (magnitude) of a complex number -- i.e. the distance of the complex number
+from the origin in the complex plane.
 \inputminted[
     label=abs/1,
-    firstline=54,
-    lastline=57,
+    firstline=59,
+    lastline=60,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/cmplx.ex}
 \inputminted[
     label=iex abs/1,
-    firstline=51,
-    lastline=52,
-    xleftmargin=-3mm,  % Adjust this value as needed
+    firstline=56,
+    lastline=57,
+    xleftmargin=-10mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/cmplx.ex}
 
@@ -199,10 +250,10 @@ $z$ escapes or not.
 \inputminted[
     label=Brot.mandelbrot/1,
     firstline=41,
-    lastline=56,
+    lastline=59,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
-]{elixir}{../lib/cmplx.ex}
+]{elixir}{../lib/brot.ex}
 
 \noindent As shown in the helper function
 \mintinline{elixir}{perform_iteration},
@@ -219,9 +270,45 @@ The
 \mintinline{elixir}{Color} module is designed to map numerical values,
 specifically the number of iterations it takes for a point to escape
 (or be determined outside) the Mandelbrot set, to color values.
-This mapping is essential for visualizing the Mandelbrot set,
-where different colors can represent the ''speed'' at which points escape
-to infinity, providing a visual cue to the complexity and boundary of the set.
+%This mapping is essential for visualizing the Mandelbrot set,
+%where different colors can represent the ''speed'' at which points escape
+%to infinity, providing a visual cue to the complexity and boundary of the set.
+The primary funciton
+\mintinline{elixir}{Color.convert/3}
+takes the iteration count for a specific point,
+\mintinline{elixir}{depth}, and
+\mintinline{elixir}{max}, the maximum number of iterations used in the Mandelbrot calculation.
+The iteration count,
+\mintinline{elixir}{depth}, is a measure of how quickly points escape the boundary of the Mandelbrot set.
+
+Based of the value of
+\mintinline{elixir}{depth} relative to
+\mintinline{elixir}{max},
+the function calculates color values (RGB) that represent the point's behavior under iteration.
+The result is a color value, represented as an, RGB tuple, that is used to color a pixel in the final image.
+\inputminted[
+    label=Color.convert/3,
+    firstline=21,
+    lastline=30,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/color.ex}
+\inputminted[
+    label=Color.red/2,
+    firstline=33,
+    lastline=59,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/color.ex}
+\inputminted[
+    label=Color-comment,
+    firstline=95,
+    lastline=95,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/color.ex}
+
+\noindent The comments provided for the helper functions are extensive enough to be self-explanatory.
 
 \section*{Result}
 \label{sec:result}
