@@ -45,8 +45,7 @@ defmodule MandelbrotGenerator do
     end
 
     # Wait for all tasks to complete and collect the rows of RGB values
-    Enum.map(tasks, &Task.await(&1, 30000))
-    |> Enum.reverse()
+    Enum.map(tasks, &Task.await(&1, 30000)) |> Enum.reverse()
   end
 
   # Processes a single row of pixels, calculating the color for each pixel based on
@@ -55,10 +54,8 @@ defmodule MandelbrotGenerator do
     for col_num <- 1..width do
       # Translate pixel position to a complex number
       complex = complex_translator.(col_num, row_num)
-
       # Calculate Mandelbrot set membership and get iteration count
       iteration_count = Brot.mandelbrot(complex, max_iterations)
-
       # Convert iteration count to an RGB color value based on the chosen color scheme
       Color.convert(iteration_count, max_iterations, color_scheme)
     end

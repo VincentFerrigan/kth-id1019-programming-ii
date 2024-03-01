@@ -34,13 +34,10 @@ defmodule Color do
   defp red(iteration_count, max_iterations) do
     # Calculate the fraction of the maximum iterations reached
     fraction_of_max = iteration_count / max_iterations
-
     # Scale the fraction to a range that maps to our color transitions
     scaled_fraction = fraction_of_max * 4
-
     # Determine the major color phase based on the scaled fraction
     color_phase = trunc(scaled_fraction)
-
     # Calculate the intensity within the current color phase (0-255)
     intensity = trunc(255 * (scaled_fraction - color_phase))
 
