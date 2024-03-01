@@ -17,7 +17,7 @@ defmodule PPM do
       iex> PPM.write("test.ppm", [[{:rgb, 255, 0, 0}, {:rgb, 0, 255, 0}, {:rgb, 0, 0, 255}]])
       :ok
   """
-  @spec write(String.t(), list(list({atom(), integer, integer, integer}))) :: :ok
+  @spec write(String.t(), list(list({atom(), integer(), integer(), integer()}))) :: :ok
   def write(name, image) do
     # The image is a list of rows, each row a list of
     # tuples {R,G,B}. The RGB values are 0-255.
