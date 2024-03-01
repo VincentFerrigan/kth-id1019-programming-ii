@@ -69,14 +69,14 @@ The steps outlined in the document are as follows:
     \item~\hyperref[subsec:color]{Color Module}: Implement a module to convert the depth (number of
     iterations) to RGB color values, which will be used to color the Mandelbrot
     image.
-    \item Mandelbrot Set Generation: Combine all the above to generate the
+    \item ~\hyperref[subsec:generator]{Mandelbrot Set Generation}: Combine all the above to generate the
     Mandelbrot set over a defined area and resolution, and save this as an image
     using the PPM module.
 \end{enumerate}
 This assignment is based on the instruction
 \href{https://people.kth.se/~johanmon/courses/id1019/seminars/mandel/mandel.pdf}{'Generating a Mandelbrot Image'}
 by course examiner Johan Montelius.
-The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+The Mix-project for this assignment, including all relative functions, Unit-test and images can be found on GitHub:
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot}{Repo Programming II - Mandelbrot}% TODO FUNKAR DEN? ÄNDRA NAMN
 
 \section*{Methods}\label{sec:methods}
@@ -99,7 +99,7 @@ All code was written in \emph{IntelliJ IDEA}.
 Quick-fixes and editing was, however, done in \emph{Vim}.
 \emph{GIT} and \emph{GitHub} were used for version control.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
-The report was written in \LaTeX.
+The report was written in \LaTeX and the generated ppm-files were converted by a python script.
 % For exploration and benchmarking, the interactive environment and notebook
 % \href{https://livebook.dev/}{\emph{Livebook}}
 % was heavily used.
@@ -119,7 +119,7 @@ one can first write a couple of test cases, as illustrated in the test-example b
 \inputminted[
     label=CMPLX TESTS,
     firstline=5,
-    lastline=11,
+    lastline=8,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../test/cmplx_test.exs}
@@ -139,14 +139,6 @@ The function was therefore created as follows:
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../lib/cmplx.ex}
-\inputminted[
-    label=iex sqr/1,
-    firstline=44,
-    lastline=45,
-    xleftmargin=-10mm,  % Adjust this value as needed
-    fontsize=\footnotesize,
-]{elixir}{../lib/cmplx.ex}
-
 \subsection*{Complex Numbers Module}
 \label{subsec:cmplx}
 The module
@@ -286,6 +278,8 @@ Based of the value of
 \mintinline{elixir}{max},
 the function calculates color values (RGB) that represent the point's behavior under iteration.
 The result is a color value, represented as an, RGB tuple, that is used to color a pixel in the final image.
+
+The comments provided for the helper functions are extensive enough to be self-explanatory.
 \inputminted[
     label=Color.convert/3,
     firstline=21,
@@ -308,158 +302,99 @@ The result is a color value, represented as an, RGB tuple, that is used to color
     fontsize=\footnotesize,
 ]{elixir}{../lib/color.ex}
 
-\noindent The comments provided for the helper functions are extensive enough to be self-explanatory.
+\subsection*{Mandelbrot Set Generation}
+\label{subsec:generator}
+The
+\mintinline{elixir}{MandelbrotGenerator} module provides the functionality for generating and visualizing the Mandelbrot set
+within a specified viewport and resolution.
+It is designed to calculate the Mandelbrot set for a given area in the complex plane,
+determined by the viewport's center
+(\mintinline{elixir}{x_center},
+ \mintinline{elixir}{y_center}), zoom level
+(\mintinline{elixir}{scale}), and the image resolution
+(\mintinline{elixir}{width},
+\mintinline{elixir}{height}).
+It iterates over each pixel, computes whether it belongs to the Mandelbrot set within a specified depth
+(\mintinline{elixir}{max_iterations}), and applies a color scheme
+(\mintinline{elixir}{color_scheme}) based on the iteration count for each point.
+\inputminted[
+    label=MandelbrotGenerator.mandelbrot/7,
+    firstline=30,
+    lastline=66,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../lib/mandelbrotgenerator.ex}
 
+Note that an asynchronous task is initiated for each row of the image using
+\mintinline{elixir}{Task.async/1}.
+This divides the image generation into parallel tasks,
+where each task is responsible for computing the color values of a single row in the image.
+
+\clearpage
 \section*{Result}
 \label{sec:result}
-Since all
+A
+\mintinline{elixir}{MandelDemo} module was created to facilitate the generation and saving of Mandelbrot set images
+with customizable parameters and color mappings.
+The module prompts the user for several inputs that define the properties of the Mandelbrot set image to be generated.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/mb_large_green_x-2.3_y1.1_xn0.0008.png}
+    \caption{Visualization of the Mandelbrot set.}
+    \label{fig:mandelbrot1}
+\end{figure}
+\begin{longlisting}
+\begin{minted}[fontsize=\footnotesize]{bash}
+iex(1)> MandelDemo.run_demo()
+Enter the x-coordinate of the center:
+> -2.3
+Enter the y-coordinate of the center:
+> 1.1
+Enter the zoom level (e.g., 0.008 for a close-up view):
+> 0.0008
+Choose resolution: 1) Small (720x480) 2) Large (2560x1440)
+> 2
+Choose a color mapping: 1) Red 2) Blue 3) Green
+> 3
+mb_large_green_x-2.3_y1.1_xn0.0008.ppm has been saved.
+:ok
+\end{minted}
+\caption{The prompt that generated figure~\ref{fig:mandelbrot1}
+}
+\label{listing:demo1}
+\end{longlisting}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/mb_large_green_x1.0e-5_y0.644_xn0.008.png}
+    \caption{Visualization of the Mandelbrot set.}
+    \label{fig:mandelbrot2}
+\end{figure}
+\begin{longlisting}
+\begin{minted}[fontsize=\footnotesize]{bash}
+iex(2)> MandelDemo.run_demo()
+Enter the x-coordinate of the center:
+> 0.00001
+Enter the y-coordinate of the center:
+> 0.644
+Enter the zoom level (e.g., 0.008 for a close-up view):
+> 0.008
+Choose resolution: 1) Small (720x480) 2) Large (2560x1440)
+> 2
+Choose a color mapping: 1) Red 2) Blue 3) Green
+> 3
+mb_large_green_x1.0e-5_y0.644_xn0.008.ppm has been saved.
+:ok
+\end{minted}
+\caption{The prompt that generated figure~\ref{fig:mandelbrot2}
+}
+\label{listing:demo2}
+\end{longlisting}
+
+\subsection*{Github-link}
+\noindent All
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/}{code (lib/)} and % TODO FUNKAR DEN? ÄNDRA NAMN
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/test/}{tests (test/)}
 can be found on the author's
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)},
-this section will only give a brief overview.
-
-
-
-%TODO write what
-%a simplified view of the brute-force solution's algorithm's logic.
-
-%\subsection*{Complex Numbers Module}
-%Part I processes seeds through multiple transformation maps sequentially.
-%\inputminted[
-%    label=run_part_1/1,
-%    firstline=24,
-%    lastline=34,
-%    xleftmargin=-3mm,  % Adjust this value as needed
-%    fontsize=\footnotesize,
-%]{elixir}{../lib/day05.ex}
-%\inputminted[
-%    label=iex run_part_1/1,
-%    firstline=21,
-%    lastline=22,
-%    xleftmargin=-3mm,  % Adjust this value as needed
-%    fontsize=\footnotesize,
-%]{elixir}{../lib/day05.ex}
-%Starting from
-%\mintinline{elixir}{run_part_1/1},
-%it reads the seeds and maps from the input, then for each seed:
-%\begin{enumerate}
-%    \item Parse Seeds and Maps:
-%    Converts the seed and transformation maps strings into structured data.
-%    \item Apply Transformations Sequentially: For each seed, it traverses through each map (seed-to-soil, soil-to-fertilizer, etc.), applying the respective transformation based on the mapping rules. This involves finding the appropriate transformation for the seed value in each map and calculating the new seed value.
-%    \item Find Minimum Location Number: After applying all transformations to each seed, the process identifies the lowest resulting location number among all seeds.
-%\end{enumerate}
-%
-%This approach is direct but not optimized for handling ranges,
-%leading to the necessity for a different strategy in Part II.
-%
-%%    \inputminted[
-%%        label=brute_force_solve/2,
-%%        firstline=111,
-%%        lastline=114,
-%%        xleftmargin=-3mm,  % Adjust this value as needed
-%%        fontsize=\footnotesize,
-%%    ]{elixir}{../lib/day05.ex}
-%%    \inputminted[
-%%        label=iex brute_force_solve/2,
-%%        firstline=108,
-%%        lastline=109,
-%%        xleftmargin=-3mm,  % Adjust this value as needed
-%%        fontsize=\footnotesize,
-%%    ]{elixir}{../lib/day05.ex}
-%
-%\subsection*{Part II}
-%\inputminted[
-%    label=run_part_2/1,
-%    firstline=170,
-%    lastline=188,
-%    xleftmargin=-3mm,  % Adjust this value as needed
-%    fontsize=\footnotesize,
-%]{elixir}{../lib/day05.ex}
-%
-%\inputminted[
-%    label=iex run_part_2/1,
-%    firstline=167,
-%    lastline=168,
-%    xleftmargin=-3mm,  % Adjust this value as needed
-%    fontsize=\footnotesize,
-%]{elixir}{../lib/day05.ex}
-%
-%The process, kicked off by
-%\mintinline{elixir}{run_part_2}, includes parsing the input into structured data for seeds and
-%transformation maps.
-%The structured data for these seeds are of the
-%\mintinline{elixir}{`Range.t()`} type.
-%Which is performed by the
-%\mintinline{elixir}{create_ranges/1} function.
-%\inputminted[
-%    label=create/2,
-%    firstline=243,
-%    lastline=248,
-%    xleftmargin=-3mm,  % Adjust this value as needed
-%    fontsize=\footnotesize,
-%]{elixir}{../lib/day05.ex}
-%
-%To optimize processing, overlapping ranges are merged into single ranges.
-%This is done by sorting the ranges and then merging any that overlap.
-%
-%\subsubsection*{Applying Transformation}
-%For each range,
-%transformations are applied based on the parsed maps.
-%This involves checking for overlaps between the range and the transformation maps, and then calculating new ranges based on the transformations.
-%This process might split ranges into smaller ones or adjust their start and end points according to the transformation rules.
-%
-%    \inputminted[
-%        label=traverse/2,
-%        firstline=91,
-%        lastline=93,
-%        xleftmargin=-3mm,  % Adjust this value as needed
-%        fontsize=\footnotesize,
-%    ]{elixir}{../lib/day05.ex}
-%
-%    \inputminted[
-%        label=traverse/3,
-%        firstline=110,
-%        lastline=129,
-%        xleftmargin=-3mm,  % Adjust this value as needed
-%        fontsize=\footnotesize,
-%    ]{elixir}{../lib/day05.ex}
-%
-%After applying all transformations, the resulting list of ranges may contain nested lists or nil values.
-%These are flattened into a single list, and nil values are filtered out.
-%
-%Finally, it calculates the lowest location number from the transformed ranges.
-
-\section*{Discussion}\label{sec:discussion}
-%The key difference between the solutions for part I and part II lies in how they handle
-%the input data and apply transformations.
-%Part 1 processes individual seeds,
-%applying transformations to each seed and determining the lowest location number through a direct,
-%sequential approach.
-%It utilizes functions like
-%\mintinline{elixir}{do_traverse} and
-%\mintinline{elixir}{locate} for this purpose, focusing on one seed at a time.
-%
-%Part 2, on the other hand, is optimized for handling ranges of seeds.
-%It introduces a more complex logic to manage and transform ranges efficiently,
-%avoiding processing each seed individually.
-%This includes merging overlapping ranges with
-%\mintinline{elixir}{`merge:overlapping/1`} and applying transformations to entire ranges at once.
-%The traverse functions
-%(\mintinline{elixir}{traverse/2} and
-%\mintinline{elixir}{traverse/3})
-%in part II are specifically designed to work with these ranges,
-%employing logic to split and manipulate ranges based on the transformations,
-%which differs significantly from the item-by-item approach in part II.
-%
-%Optimizing for part II was important due to the scale and efficiency needed when dealing with potentially millions of seeds.
-%Using
-%\mintinline{elixir}{do_traverse} and
-%\mintinline{elixir}{locate}
-%for individual seeds, as in part I, would become impractical for part II because
-%processing each seed one by one would result in significant computational overhead and time complexity.
-%By handling ranges of seeds, one can apply transformations to large groups of seeds simultaneously,
-%significantly reducing the number of operations needed.
-%This approach leverages the patterns in the input data to optimize processing,
-%making it feasible to handle large datasets efficiently.
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/7/mandelbrot/}{Github}.
 \end{document}
