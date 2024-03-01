@@ -38,14 +38,17 @@ defmodule Brot do
       iex> Brot.mandelbrot(Cmplx.new(0.255, 0), 30)
       30
   """
-  @spec mandelbrot(Cmplx.t(), integer()) :: integer()
+  @spec mandelbrot(Cmplx.cpx(), integer()) :: integer()
   def mandelbrot(complex, max_iterations) do
     initial_value = Cmplx.new(0, 0)
     perform_iteration(0, initial_value, complex, max_iterations)
   end
 
   # Recursively iterates to calculate Mandelbrot set value.
-  defp perform_iteration(max_iterations, _current, _complex, max_iterations), do: max_iterations
+  defp perform_iteration(max_iterations, _current, _complex, max_iterations) do
+    max_iterations
+  end
+
   defp perform_iteration(iteration, current, complex, max_iterations) do
     if Cmplx.abs(current) > 2 do
       iteration
