@@ -4,12 +4,12 @@ defmodule HuffmanTest do
 
   describe "calculate_frequencies" do
     test "Return empty map for an empty string", do:
-      assert.Huffman.calculate_frequencies("") == %{}
+      assert Huffman.calculate_frequencies("") == %{}
 
     test "Determine frequency of each character" do
       text     = "aaabbc"
       exp_freq = %{"a" => 3, "b" => 2, "c" => 1}
-      assert.Huffman.calculate_frequencies(text) == exp_freq
+      assert Huffman.calculate_frequencies(text) == exp_freq
     end
   end
 
