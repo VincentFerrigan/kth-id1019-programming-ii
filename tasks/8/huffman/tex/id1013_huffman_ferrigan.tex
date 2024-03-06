@@ -1,0 +1,134 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+\title{
+    Huffman
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+\date{23 february 2024}
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+%TODO
+
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman}{Repo Programming II - Huffman}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}\label{sec:methods}
+\subsection*{Literature Study}
+\label{subsec:literaturestudy}
+Elixir-syntax and similar topics were acquired
+from both the
+\href{https://elixir-lang.org/docs.html}{Elixir official documentation}
+and the free Elixir Tutorial
+\href{https://elixirschool.com/en}{Elixir School
+website}.
+The author also relied on textbooks found on
+\href{https://learning.oreilly.com}{O'Reilly Media},
+especially Brute Tate's
+\href{https://learning.oreilly.com/library/view/programmer-passport-elixir/9781680509649/}{Programmer Passport: Elixir}.
+
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+For exploration and benchmarking, the interactive environment and notebook
+\href{https://livebook.dev/}{\emph{Livebook}}
+was heavily used.
+
+\subsubsection*{Test Driven Development}\label{sec:ttd}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+% For example, before creating ranges for part II,
+% one can first write a couple of test cases, as illustrated in the test-example below.
+%TODO.
+\inputminted[
+    label=??????
+    firstline=1,
+    lastline=1,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/huffman_test.exs}
+One can also set up tests for the sample data, given by Advent of Code, prior to coding.
+\inputminted[
+    label=??????
+    firstline=1,
+    lastline=1,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/huffman_test.exs}
+%\noindent The
+%\mintinline{elixir}{run_sample/1},
+
+\section*{Result}
+\label{sec:result}
+Since all
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/day05/lib/huffman.ex}{code (lib/day12.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/test/huffman_test.exs}{tests (test/day12\_test.exs)}
+can be found on the author's
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)},
+this section will only give a brief overview for each part.
+%TODO write what
+%a simplified view of the brute-force solution's algorithm's logic.
+
+%    \inputminted[
+%        label=brute_force_solve/2,
+%        firstline=111,
+%        lastline=114,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+%    \inputminted[
+%        label=iex brute_force_solve/2,
+%        firstline=108,
+%        lastline=109,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/day05.ex}
+
+\section*{Discussion}\label{sec:discussion}
+\end{document}
