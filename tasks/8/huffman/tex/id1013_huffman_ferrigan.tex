@@ -30,6 +30,9 @@
 \renewcommand\theadgape{\Gape[4pt]} % Add some spacing around the headers
 \setcellgapes{3pt} % Spacing for the cell content
 
+% For item space etc.
+\usepackage{enumitem}
+
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
@@ -50,7 +53,7 @@
 }
 \author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
 
-\date{23 february 2024}
+\date{\today}
 \maketitle
 
 \section*{Introduction}
@@ -75,6 +78,7 @@ The tasks involves
 The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman}{Repo Programming II - Huffman}% TODO FUNKAR DEN? ÄNDRA NAMN
 
+\clearpage
 \section*{Methods}\label{sec:methods}
 \subsection*{Literature Study}
 \label{subsec:literaturestudy}
@@ -144,11 +148,12 @@ by setting up tests for each step, as follows:
 %\noindent The
 %\mintinline{elixir}{run_sample/1},
 
+\clearpage
 \section*{Result}
 \label{sec:result}
 Since all
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/lib/huffman.ex}{code (lib/huffman.ex)},
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/test/huffman_test.exs}{tests (test/day12\_test.exs)}, 
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/test/huffman_test.exs}{tests (test/huffman\_test.exs)}, 
 and 
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/lib/huffman_bench.ex}{benchmark code (lib/huffman\_bench.ex)}
 can be found on the author's
@@ -167,7 +172,7 @@ designed to take a piece of text and perform several steps to encode it using th
        fontsize=\footnotesize,
    ]{elixir}{../lib/huffman.ex}
 \noindent 
-The {first part} builds the Hoffman-tree. 
+The \textbf{first part} builds the Hoffman-tree. 
 \mintinline{elixir}{calculate_frequencies/1} counts how often each character
 appears in the input text. It does so by spliting the text into its constituent
 characters (or graphemes to handle multibyte characters correctly), then creates a map where
@@ -191,7 +196,7 @@ highest.
        fontsize=\footnotesize,
    ]{elixir}{../lib/huffman.ex}
 \noindent 
-\mintinline{elixir}{construct_tree/1} builds the Huffman tree from the priority queue.
+The function \mintinline{elixir}{construct_tree/1} builds the Huffman tree from the priority queue.
 It iteratively combines the two nodes with the lowest frequencies into a new node
 (whose frequency is the sum of the two it combines), then reinserts this new
 node back into the priority queue in the correct position, repeating this
@@ -199,6 +204,7 @@ process until there is only one node left, which represents the root of the
 Huffman tree.
 
 The \textbf{second part} generates the encoding and decoding tables. 
+The function 
 \mintinline{elixir}{generate_encoding_table/1} creates a table mapping each
 character to its Huffman code. It traverses the Huffman tree from the root,
 assigning a '$0$' for every left branch taken and a '$1$' for every right branch, accumulating these bits into the Huffman
@@ -237,7 +243,7 @@ The reason for choosing bitstrings can be found in the discussion section below.
 The algorithm was able to compress
 the given input text ''Kallocain.txt'' to around $53\%$ of its original size.
 The bytesize of the text was around $334 000$ ($319 000$ characters) while the bytesize of the compressed text $178 600$
-
+\clearpage
 \subsubsection*{Benchmark Results}
 \begin{longtable}{@{}lrrrrr@{}}
 \toprule
@@ -265,28 +271,26 @@ The bytesize of the text was around $334 000$ ($319 000$ characters) while the b
 \bottomrule
 \caption{Benchmarking results for Huffman encoding and decoding across various input sizes.}
 \end{longtable}
-
 \subsubsection*{System Configuration}
-\begin{itemize}
+% \begin{itemize}
+\begin{itemize}[itemsep=0pt, topsep=0pt]
     \item Operating System: Linux
     \item CPU Information: 13th Gen Intel(R) Core(TM) i7-1370P
     \item Number of Available Cores: 20
-    \item Available memory: 62.45 GB
+    % \item Available memory: 62.45 GB
     \item Elixir 1.15.7, Erlang 26.2.2, JIT enabled: true
 \end{itemize}
-
 \subsubsection*{Benchmark Configuration}
-\begin{itemize}
+% \begin{itemize}
+\begin{itemize}[itemsep=0pt, topsep=0pt]
     \item Warmup: 2 s
     \item Time: 10 s
-    \item Memory Time: 0 ns
-    \item Reduction Time: 0 ns
+    % \item Memory Time: 0 ns
+    % \item Reduction Time: 0 ns
     \item Parallel: 1
     \item Inputs: 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600 characters
     \item Estimated Total Run Time: 1 min 48 s
 \end{itemize}
-
-
 
 %TODO write what
 %a simplified view of the brute-force solution's algorithm's logic.
