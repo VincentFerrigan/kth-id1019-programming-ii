@@ -57,7 +57,8 @@ defmodule Huffman do
     |> Enum.sort_by(&(&1.frequency))
   end
 
-  @spec construct_tree(priority_queue()) :: huffman_node()
+  # @spec construct_tree(priority_queue()) :: huffman_node()
+  @spec construct_tree(priority_queue()) :: tree()
   def construct_tree([final_node]) when is_map(final_node), do: final_node
   def construct_tree(queue) do
     # Extract the two nodes with the lowest frequencies
@@ -90,7 +91,7 @@ defmodule Huffman do
   end
 
   defp traverse_tree(acc, nil, _), do: acc
-  defp traverse_tree(acc, %Huffman{char: char, left: nil, right: nil} = node, path) when not is_nil(char) do
+  defp traverse_tree(acc, %Huffman{char: char, left: nil, right: nil} = _node, path) when not is_nil(char) do
     Map.put(acc, char, path)
   end
 
@@ -111,15 +112,15 @@ defmodule Huffman do
   end
 
   # step 4
-  @spec encode_text(String.t(), encoding_table()) :: String.t()
-  def encode_text(text, encoding_table) do
-    String.graphemes(text)
-    |> Enum.map(&Map.get(encoding_table, &1))
-    |> Enum.join()
-  end
+  # @spec encode_text(String.t(), encoding_table()) :: String.t()
+  # def encode_text(text, encoding_table) do
+  #   String.graphemes(text)
+  #   |> Enum.map(&Map.get(encoding_table, &1))
+  #   |> Enum.join()
+  # end
 
-  @spec encode_text_to_bits(String.t(), encoding_table()) :: bitstring()
-  def encode_text_to_bits(text, encoding_table) do
+  @spec encode_text(String.t(), encoding_table()) :: bitstring()
+  def encode_text(text, encoding_table) do
     text
     |> String.graphemes()
     |> Enum.map(&Map.fetch!(encoding_table, &1))
