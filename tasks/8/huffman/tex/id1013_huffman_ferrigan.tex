@@ -20,6 +20,16 @@
 \usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
 \usepackage{subcaption}
 
+% Table
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell} % Include makecell package
+
+\renewcommand\theadalign{bc} % Center align the column headers
+\renewcommand\theadfont{\bfseries} % Make column headers bold
+\renewcommand\theadgape{\Gape[4pt]} % Add some spacing around the headers
+\setcellgapes{3pt} % Spacing for the cell content
+
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
@@ -45,7 +55,22 @@
 
 \section*{Introduction}
 \label{sec:introduction}
-%TODO
+The assignment focuses on implementing Huffman coding, a method for
+efficient data representation through compression.
+The tasks involves
+\begin{enumerate}
+    \item Construct a Huffman Tree:
+    Using a sample text, determine the frequency of each character and construct a Huffman tree that assigns shorter bit shorter bit sequences to more frequent characters and longer sequences to less frequent ones.
+    \item Create Encoding and Decoding Tables: 
+    from the Huffman tree, create tables for encoding (character to code) and decoding (code to character).
+    \item Encode Text:
+    Convert text into a sequence of bits using the encoding table.
+    \item Decode Bits: 
+    Convert the sequence of bits back into text using the decoding table.
+    \item Performance Testing: 
+    Benchmark the encoding and decoding processes with large texts to assess
+    performance.
+\end{enumerate}
 
 The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman}{Repo Programming II - Huffman}% TODO FUNKAR DEN? ÄNDRA NAMN
@@ -71,9 +96,8 @@ Quick-fixes and editing was, however, done in \emph{Vim}.
 \emph{GIT} and \emph{GitHub} were used for version control.
 Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
 The report was written in \LaTeX.
-For exploration and benchmarking, the interactive environment and notebook
-\href{https://livebook.dev/}{\emph{Livebook}}
-was heavily used.
+
+For benchmarking, Elixir's \emph{Benchee} library was used.
 
 \subsubsection*{Test Driven Development}\label{sec:ttd}
 The development was an iterative approach with ''trail and errors''.
@@ -87,17 +111,33 @@ and finally refactor the code.
 % one can first write a couple of test cases, as illustrated in the test-example below.
 %TODO.
 \inputminted[
-    label=??????
-    firstline=1,
-    lastline=1,
+    label=Run,
+    firstline=5,
+    lastline=22,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../test/huffman_test.exs}
-One can also set up tests for the sample data, given by Advent of Code, prior to coding.
+\noindent
+Since it is best to start simple by developing incrementally, one can also start
+by setting up tests for each step, as follows:
 \inputminted[
-    label=??????
-    firstline=1,
-    lastline=1,
+    label=CalculateFrequency,
+    firstline=28,
+    lastline=32,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/huffman_test.exs}
+\inputminted[
+    label=priority_queue,
+    firstline=39,
+    lastline=47,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/huffman_test.exs}
+\inputminted[
+    label=construct_tree,
+    firstline=63,
+    lastline=79,
     xleftmargin=-3mm,  % Adjust this value as needed
     fontsize=\footnotesize,
 ]{elixir}{../test/huffman_test.exs}
@@ -107,11 +147,147 @@ One can also set up tests for the sample data, given by Advent of Code, prior to
 \section*{Result}
 \label{sec:result}
 Since all
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/day05/lib/huffman.ex}{code (lib/day12.ex)} and % TODO FUNKAR DEN? ÄNDRA NAMN
-\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/test/huffman_test.exs}{tests (test/day12\_test.exs)}
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/lib/huffman.ex}{code (lib/huffman.ex)},
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/test/huffman_test.exs}{tests (test/day12\_test.exs)}, 
+and 
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/8/huffman/lib/huffman_bench.ex}{benchmark code (lib/huffman\_bench.ex)}
 can be found on the author's
 \href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)},
 this section will only give a brief overview for each part.
+
+The 
+\mintinline{elixir}{run_encoding/1} function is
+designed to take a piece of text and perform several steps to encode it using the Huffman coding algorithm. 
+
+   \inputminted[
+       label=run_encoding/1,
+       firstline=57,
+       lastline=69,
+       xleftmargin=-3mm,  % Adjust this value as needed
+       fontsize=\footnotesize,
+   ]{elixir}{../lib/huffman.ex}
+\noindent 
+The {first part} builds the Hoffman-tree. 
+\mintinline{elixir}{calculate_frequencies/1} counts how often each character
+appears in the input text. It does so by spliting the text into its constituent
+characters (or graphemes to handle multibyte characters correctly), then creates a map where
+each character is a key, and its frequency of occurrence is the value.
+\mintinline{elixir}{build_priority_queue/1} converts the frequency map into a priority queue.
+Each entry in the frequency map is turned into a Huffman node --
+a \mintinline{elixir}{%Huffman{}} struct 
+with 
+\mintinline{elixir}{char}, 
+\mintinline{elixir}{frequency}, 
+\mintinline{elixir}{left}, and 
+\mintinline{elixir}{right} attributes. 
+These nodes are then sorted
+into a list (the priority queue) based on their frequencies, from lowest to
+highest.
+   \inputminted[
+       label=huffman_nod,
+       firstline=13,
+       lastline=19,
+       xleftmargin=-3mm,  % Adjust this value as needed
+       fontsize=\footnotesize,
+   ]{elixir}{../lib/huffman.ex}
+\noindent 
+\mintinline{elixir}{construct_tree/1} builds the Huffman tree from the priority queue.
+It iteratively combines the two nodes with the lowest frequencies into a new node
+(whose frequency is the sum of the two it combines), then reinserts this new
+node back into the priority queue in the correct position, repeating this
+process until there is only one node left, which represents the root of the
+Huffman tree.
+
+The \textbf{second part} generates the encoding and decoding tables. 
+\mintinline{elixir}{generate_encoding_table/1} creates a table mapping each
+character to its Huffman code. It traverses the Huffman tree from the root,
+assigning a '$0$' for every left branch taken and a '$1$' for every right branch, accumulating these bits into the Huffman
+code for each leaf node (character) encountered.
+%    \inputminted[
+%        label=generate_encoding_table/1,
+%        firstline=204,
+%        lastline=218,
+%        xleftmargin=-3mm,  % Adjust this value as needed
+%        fontsize=\footnotesize,
+%    ]{elixir}{../lib/huffman.ex}
+\mintinline{elixir}{generate_decoding_table/1} simply inverts the encoding table to create a decoding table.
+The \textbf{third and final part} encodes the text. 
+\mintinline{elixir}{encode_text/2} looks up each character in the input text in
+the encoding table to find its Huffman code and concatenates these codes into a
+single bitstring that represents the encoded text.
+The headfunction returns a tuple, 
+\mintinline{elixir}{{:ok, encoded_text, decoding_table}} that allows the caller 
+not only to access the encoded text but also to decode it later using the provided decoding table.
+By following these steps, the 
+\mintinline{elixir}{run_encoding/1} function efficiently encodes input text using the Huffman coding algorithm, ensuring optimal compression based on character frequency.
+\subsubsection*{Example}
+This example demonstrates how to use 
+\mintinline{elixir}{run_encoding/1} to encode a simple string, returning the encoded bitstring and the decoding table necessary for decoding it back to the original text.
+   \inputminted[
+       label=iex run_encoding/1,
+       firstline=44,
+       lastline=55,
+       xleftmargin=-3mm,  % Adjust this value as needed
+       fontsize=\footnotesize,
+   ]{elixir}{../lib/huffman.ex}
+\noindent
+The reason for choosing bitstrings can be found in the discussion section below.
+
+\subsection*{Benchmark}
+The algorithm was able to compress
+the given input text ''Kallocain.txt'' to around $53\%$ of its original size.
+The bytesize of the text was around $334 000$ ($319 000$ characters) while the bytesize of the compressed text $178 600$
+
+\subsubsection*{Benchmark Results}
+\begin{longtable}{@{}lrrrrr@{}}
+\toprule
+\thead{Input \\ Characters} & \thead{Operation} & \thead{IPS \\ (iterations/s)} & \thead{Average \\ Time} & \thead{99th \\ Percentile} & \thead{Sample \\ Size} \\ 
+\midrule
+\endhead
+100 & Encode & 7.90K & 126.62 $\mu$s & 170.78 $\mu$s & 78.56K \\
+100 & Decode & 7.45K & 134.30 $\mu$s & 203.59 $\mu$s & 38.59K \\
+200 & Encode & 4.56K & 219.31 $\mu$s & 334.18 $\mu$s & 45.48K \\
+200 & Decode & 5.49K & 182.15 $\mu$s & 362.84 $\mu$s & 31.75K \\
+400 & Encode & 2.13K & 468.88 $\mu$s & 625.71 $\mu$s & 21.29K \\
+400 & Decode & 2.69K & 371.63 $\mu$s & 469.38 $\mu$s & 10.90K \\
+800 & Encode & 1.47K & 679.22 $\mu$s & 1124.99 $\mu$s & 14.71K \\
+800 & Decode & 1.40K & 716.67 $\mu$s & 851.73 $\mu$s & 6.08K \\
+1600 & Encode & 661.58 & 1.51 ms & 2.16 ms & 6.61K \\
+1600 & Decode & 1.83K & 547.47 $\mu$s & 626.00 $\mu$s & 8.57K \\
+3200 & Encode & 318.13 & 3.14 ms & 4.14 ms & 3.18K \\
+3200 & Decode & 358.08 & 2.79 ms & 2.95 ms & 1.66K \\
+6400 & Encode & 156.74 & 6.38 ms & 9.24 ms & 1.57K \\
+6400 & Decode & 184.45 & 5.42 ms & 6.01 ms & 828 \\
+12800 & Encode & 85.55 & 11.69 ms & 18.68 ms & 856 \\
+12800 & Decode & 117.75 & 8.49 ms & 13.05 ms & 554 \\
+25600 & Encode & 56.83 & 17.60 ms & 31.45 ms & 569 \\
+25600 & Decode & 48.44 & 20.65 ms & 21.68 ms & 230 \\
+\bottomrule
+\caption{Benchmarking results for Huffman encoding and decoding across various input sizes.}
+\end{longtable}
+
+\subsubsection*{System Configuration}
+\begin{itemize}
+    \item Operating System: Linux
+    \item CPU Information: 13th Gen Intel(R) Core(TM) i7-1370P
+    \item Number of Available Cores: 20
+    \item Available memory: 62.45 GB
+    \item Elixir 1.15.7, Erlang 26.2.2, JIT enabled: true
+\end{itemize}
+
+\subsubsection*{Benchmark Configuration}
+\begin{itemize}
+    \item Warmup: 2 s
+    \item Time: 10 s
+    \item Memory Time: 0 ns
+    \item Reduction Time: 0 ns
+    \item Parallel: 1
+    \item Inputs: 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600 characters
+    \item Estimated Total Run Time: 1 min 48 s
+\end{itemize}
+
+
+
 %TODO write what
 %a simplified view of the brute-force solution's algorithm's logic.
 
@@ -131,4 +307,24 @@ this section will only give a brief overview for each part.
 %    ]{elixir}{../lib/day05.ex}
 
 \section*{Discussion}\label{sec:discussion}
+\subsection*{Bitstrings}
+Choosing to work with \emph{bitstrings} for Huffman encoding was a strategic decision.
+\begin{description}
+    \item[Binary Efficiency:] Huffman coding algorithm assigns shorter binary
+    codes to more frequently occurring characters and longer codes to less
+    frequent ones. By representing these codes as actual bits (bitstrings)
+    rather than strings of '0's and '1's characters, you achieve the intended
+    compression, reducing the size of the encoded data significantly.
+    \item[Accurate Data Representation:] Using bitstrings allows the encoded data to be represented in its true, most compact form. 
+    Storing encoded data as strings ('0' and '1' characters) does not capitalize on the compression potential of Huffman coding since each character in a string occupies at least one byte (8 bits) in memory, which defeats the purpose of encoding that aimed to use fewer bits for common characters.
+    \item[Processing Efficiency:] Operations on bitstrings are generally faster and more memory-efficient than operations on equivalent character strings.
+    \item[Storage and Transmission:] The ultimate goal of compression algorithms
+    like Huffman coding is to reduce the amount of space needed for storage or
+    the bandwidth needed for transmission. Bitstrings can be directly written to
+    files or transmitted over networks in their compressed form without the
+    overhead of character encoding, thus realizing the full benefit of the
+    compression.
+\end{description}
+
+
 \end{document}
