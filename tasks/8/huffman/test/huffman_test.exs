@@ -2,6 +2,23 @@ defmodule HuffmanTest do
   use ExUnit.Case
   doctest Huffman
 
+  describe "Encode and decode" do
+    test "back and forth from file" do
+      {:ok, text, code, decoding_table}  = Huffman.run_encoding_from_file()
+      {:ok, decoded_text} = Huffman.run_decoding(code, decoding_table)
+
+      assert decoded_text == text
+    end
+
+    test "back and forth from text" do
+      text = "Kommer det här att funka tro?"
+      {:ok, code, decoding_table}  = Huffman.run_encoding(text)
+      {:ok, decoded_text} = Huffman.run_decoding(code, decoding_table)
+
+      assert decoded_text == text
+    end
+
+  end
   describe "calculate_frequencies" do
     test "Return empty map for an empty string", do:
       assert Huffman.calculate_frequencies("") == %{}
@@ -28,8 +45,9 @@ defmodule HuffmanTest do
   end
 
   describe "construct_tree/1" do
-    test "returns an empty tuple for an empty queue", do:
-      assert Huffman.construct_tree([]) == nil
+    test "returns an empty node for an empty queue", do:
+      assert Huffman.construct_tree([]) == %Huffman{}
+      assert Huffman.construct_tree([%Huffman{}]) == %Huffman{}
 
     test "Return a single node tree for a queue with one element" do
       queue = [%Huffman{frequency: 1, char: "a"}]
