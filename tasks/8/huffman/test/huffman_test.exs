@@ -2,15 +2,8 @@ defmodule HuffmanTest do
   use ExUnit.Case
   doctest Huffman
 
-  describe "Encode and decode" do
-    test "back and forth from file" do
-      {:ok, text, code, decoding_table}  = Huffman.run_encoding_from_file()
-      {:ok, decoded_text} = Huffman.run_decoding(code, decoding_table)
-
-      assert decoded_text == text
-    end
-
-    test "back and forth from text" do
+  describe "Run encode and decode" do
+    test "Sample test" do
       text = "Kommer det här att funka tro?"
       {:ok, code, decoding_table}  = Huffman.run_encoding(text)
       {:ok, decoded_text} = Huffman.run_decoding(code, decoding_table)
@@ -18,7 +11,16 @@ defmodule HuffmanTest do
       assert decoded_text == text
     end
 
+    test "Large text" do
+      {:ok, text, code, decoding_table} =
+        Huffman.run_encoding_from_file("./input/kallocain.txt")
+      {:ok, decoded_text} =
+        Huffman.run_decoding(code, decoding_table)
+
+      assert decoded_text == text
+    end
   end
+
   describe "calculate_frequencies" do
     test "Return empty map for an empty string", do:
       assert Huffman.calculate_frequencies("") == %{}
@@ -34,7 +36,7 @@ defmodule HuffmanTest do
     test "returns an empty list for empty frequencies map", do:
       assert Huffman.build_priority_queue(%{}) == []
 
-    test "builds a priority queue from character frequencies" do
+    test "Build a priority queue from character frequencies" do
       frequencies = %{"a" => 5, "b" => 3, "c" => 1}
       expected_queue = [
         %Huffman{char: "c", frequency: 1},
@@ -59,8 +61,6 @@ defmodule HuffmanTest do
 
 
     test "Construct Huffman tree from a priority queue" do
-      # Assuming the tree is a tuple with {left, right, frequency},
-      # where left/right are characters or other tuples.
       queue = [
         %Huffman{frequency: 1, char: "c"},
         %Huffman{frequency: 2, char: "b"},
