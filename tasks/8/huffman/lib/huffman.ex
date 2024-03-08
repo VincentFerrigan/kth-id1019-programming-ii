@@ -254,7 +254,6 @@ defmodule Huffman do
   - The decoded text as a string.
   """
   @spec decode_bits(bitstring(), decoding_table()) :: String.t()
-  # @spec decode_bits(bitstring(), %{bitstring() => String.t()}) :: String.t()
   def decode_bits(bits, decoding_table) do
     decode_bits(bits, decoding_table, <<>>, "")
   end
