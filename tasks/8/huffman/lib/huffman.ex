@@ -166,4 +166,52 @@ defmodule Huffman do
         decode_bits(rest, decoding_table, <<>>, decoded_text <> char)
     end
   end
+
+
+
+
+  # Benchmarking... redo
+  def read(file) do
+    {:ok, file} = File.open(file, [:read, :utf8])
+    binary = IO.read(file, :all)
+    File.close(file)
+    length = bit_size(binary)
+    {binary, length}
+  end
+
+  @doc """
+  The bench method starts of by reading a file and creating a huffman tree for it.
+  The function will than encode the exact same text and decode it again.
+  """
+  def bench() do
+    {text, length} = read("./input/kallocain.txt")
+    {tree, tree_time} = time(fn -> build_tree(text) end)
+    {encode_table, encode_table_time} = time(fn -> generate_encoding_table(tree) end)
+    # {decode_table, decode_table_time} = time(fn -> generate_decoding_table(generate_encoding_table(tree)) end)
+    {decode_table, decode_table_time} = time(fn -> generate_decoding_table((encode_table)) end)
+    {encode, encode_time} = time(fn -> encode_text(text, encode_table) end)
+    {_, decoded_time} = time(fn -> decode_bits(encode, decode_table) end)
+
+    # e = div(bit_size(encode), 8)
+    # r = Float.round(e / length, 3)
+    r = Float.round(bit_size(encode) / length, 3)
+
+    IO.puts("Tree Build Time: #{tree_time} us")
+    IO.puts("Encode Table Time: #{encode_table_time} us")
+    IO.puts("Decode Table Time: #{decode_table_time} us")
+    IO.puts("Encode Time: #{encode_time} us")
+    IO.puts("Decode Time: #{decoded_time} us")
+
+    IO.puts("Bitsize of text #{length}")
+    IO.puts("Bitsize of compressed_text #{bit_size(encode)}")
+
+    IO.puts("Bytesize of text #{div(length, 8)}")
+    IO.puts("Bytesize of compressed_text #{div(bit_size(encode), 8)}")
+
+    IO.puts("Compression Ratio: #{r}")
+  end
+
+  def time(func) do
+    {func.(), elem(:timer.tc(fn () -> func.() end), 0)}
+  end
 end
