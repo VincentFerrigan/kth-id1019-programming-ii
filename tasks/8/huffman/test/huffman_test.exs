@@ -18,33 +18,46 @@ defmodule HuffmanTest do
       assert Huffman.build_priority_queue(%{}) == []
 
     test "builds a priority queue from character frequencies" do
-      frequencies = %{"a" => 3, "b" => 2, "c" => 1}
-      expected_queue = [{1, "c"}, {2, "b"}, {3, "a"}] # Assuming a min-heap based on frequencies
+      frequencies = %{"a" => 5, "b" => 3, "c" => 1}
+      expected_queue = [
+        %Huffman{char: "c", frequency: 1},
+        %Huffman{char: "b", frequency: 3},
+        %Huffman{char: "a", frequency: 5},]
       assert Huffman.build_priority_queue(frequencies) == expected_queue
     end
   end
 
   describe "construct_tree/1" do
-  test "returns an empty tuple for an empty queue", do:
-    assert Huffman.construct_tree([]) == {}
+    test "returns an empty tuple for an empty queue", do:
+      assert Huffman.construct_tree([]) == nil
 
-  test "Return a single node tree for a queue with one element" do
-    queue = [{1, "a"}]
-    expected_tree = {1, "a"}
-    assert Huffman.construct_tree(queue) == expected_tree
+    test "Return a single node tree for a queue with one element" do
+      queue = [%Huffman{frequency: 1, char: "a"}]
+      expected_tree = %Huffman{char: "a", frequency: 1, left: nil, right: nil}
+      assert Huffman.construct_tree(queue) == expected_tree
+    end
+
+    # TODO lägg in Montes tester... se hur dom funkar
+
+
+    test "Construct Huffman tree from a priority queue" do
+      # Assuming the tree is a tuple with {left, right, frequency},
+      # where left/right are characters or other tuples.
+      queue = [
+        %Huffman{frequency: 1, char: "c"},
+        %Huffman{frequency: 2, char: "b"},
+        %Huffman{frequency: 4, char: "a"}
+      ]
+      expected_tree =
+      %Huffman{char: nil, frequency: 7,
+        left: %Huffman{char: nil, frequency: 3,
+            left: %Huffman{char: "c", frequency: 1},
+            right: %Huffman{char: "b", frequency: 2}
+            },
+        right: %Huffman{char: "a", frequency: 4}
+      }
+
+      assert Huffman.construct_tree(queue) == expected_tree
+    end
   end
-
-  test "Construct Huffman tree from a priority queue" do
-    # Assuming the tree is a tuple with {left, right, frequency},
-    # where left/right are characters or other tuples.
-    queue = [{1, "c"}, {2, "b"}, {3, "a"}] # This queue is based on the example above
-    expected_tree =
-            {6,
-      {3, "a"}, {3,
-          {2, "b"}, {1, "c"}}}
-    assert Huffman.construct_tree(queue) == expected_tree
-  end
-end
-
-
 end
