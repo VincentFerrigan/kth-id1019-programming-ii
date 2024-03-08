@@ -26,6 +26,40 @@ defmodule Huffman do
   @typedoc "Decoding table mapping bit strings to characters."
   @type decoding_table :: %{required(bitstring()) => String.t()}
 
+  def run_encoding(text) do
+    tree = text
+    |> calculate_frequencies()
+    |> build_priority_queue()
+    |> construct_tree()
+
+    encoding_table = tree |> generate_encoding_table()
+    decoding_table = encoding_table |> generate_decoding_table()
+
+    encoded_text  = encode_text(text, encoding_table)
+
+    {:ok, encoded_text, decoding_table}
+  end
+
+  def run_encoding_from_file(file_path \\ "./input/kallocain.txt") do
+    {:ok, text} = File.read(file_path)
+
+    tree = text
+    |> calculate_frequencies()
+    |> build_priority_queue()
+    |> construct_tree()
+
+    encoding_table = tree |> generate_encoding_table()
+    decoding_table = encoding_table |> generate_decoding_table()
+
+    encoded_text  = encode_text(text, encoding_table)
+
+    {:ok, text, encoded_text, decoding_table}
+  end
+
+  def run_decoding(bits, decoded_table) do
+    {:ok, decode_bits(bits, decoded_table)}
+  end
+
   def build_tree(text) do
     text
     |> calculate_frequencies()
@@ -33,7 +67,6 @@ defmodule Huffman do
     |> construct_tree()
   end
 
-  # @spec calculate_frequencies(String.t()):: map()
   def calculate_frequencies(text) when is_binary(text) do
     text
     |> String.graphemes() # Handles UTF-8 multi-byte characters correctly
@@ -41,7 +74,6 @@ defmodule Huffman do
       Map.update(acc, grapheme, 1, &(&1 + 1)) end)
   end
 
-  # @spec calculate_frequencies(String.t()):: map()
   def calculate_frequencies_from_file(file_path) do
     file_path
     |> File.stream!()
@@ -57,8 +89,8 @@ defmodule Huffman do
     |> Enum.sort_by(&(&1.frequency))
   end
 
-  # @spec construct_tree(priority_queue()) :: huffman_node()
   @spec construct_tree(priority_queue()) :: tree()
+  def construct_tree([]), do: %Huffman{}
   def construct_tree([final_node]) when is_map(final_node), do: final_node
   def construct_tree(queue) do
     # Extract the two nodes with the lowest frequencies
@@ -83,11 +115,10 @@ defmodule Huffman do
   end
 
 
-  # Step 2 alt 2
+  # Step 2
   @spec generate_encoding_table(node()) :: encoding_table()
   def generate_encoding_table(tree) do
     traverse_tree(%{}, tree, <<>>)
-    # traverse_tree(%{}, tree, "")
   end
 
   defp traverse_tree(acc, nil, _), do: acc
@@ -99,9 +130,6 @@ defmodule Huffman do
     acc
     |> traverse_tree(left, <<path::bitstring, 0::1>>)
     |> traverse_tree(right, <<path::bitstring, 1::1>>)
-    # |> traverse_tree(left, path <> "0")
-    # |> traverse_tree(right, path <> "1")
-
   end
 
 
@@ -112,13 +140,6 @@ defmodule Huffman do
   end
 
   # step 4
-  # @spec encode_text(String.t(), encoding_table()) :: String.t()
-  # def encode_text(text, encoding_table) do
-  #   String.graphemes(text)
-  #   |> Enum.map(&Map.get(encoding_table, &1))
-  #   |> Enum.join()
-  # end
-
   @spec encode_text(String.t(), encoding_table()) :: bitstring()
   def encode_text(text, encoding_table) do
     text
@@ -126,14 +147,6 @@ defmodule Huffman do
     |> Enum.map(&Map.fetch!(encoding_table, &1))
     |> List.foldl(<<>>, fn bits, acc -> <<acc::bitstring, bits::bitstring>> end)
   end
-
-  # @spec encode_text_to_bits3(String.t(), %{String.t() => bitstring()}) :: bitstring()
-  #   def encode_text_to_bits3(text, encoding_table) do
-  #     text
-  #     |> String.graphemes()
-  #     |> Enum.map(&Map.fetch!(encoding_table, &1)) # Ensure this fetches bitstrings
-  #     |> Enum.reduce(<<>>, &(&1 <> &2))
-  #   end
 
   @spec decode_bits(bitstring(), %{bitstring() => String.t()}) :: String.t()
   def decode_bits(bits, decoding_table) do
