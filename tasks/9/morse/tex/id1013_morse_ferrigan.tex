@@ -1,0 +1,127 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+%\setmintedinline[sql]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize,labelfont=bf,skip=1pt]{caption}
+\usepackage{subcaption}
+
+% Table
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell} % Include makecell package
+
+\renewcommand\theadalign{bc} % Center align the column headers
+\renewcommand\theadfont{\bfseries} % Make column headers bold
+\renewcommand\theadgape{\Gape[4pt]} % Add some spacing around the headers
+\setcellgapes{3pt} % Spacing for the cell content
+
+% For item space etc.
+\usepackage{enumitem}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+
+% Spacing
+\usepackage{titlesec}
+%\titlespacing*{\section}{0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+%\titlespacing*{\subsection}{0pt}{1ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\usepackage{hyperref}
+
+\begin{document}
+\title{
+    Morse Encoding
+\\\small{Programmering II, ID1019, VT24 P1}
+}
+\author{Vincent Ferrigan \href{mailto:ferrigan@kth.se}{ferrigan@kth.se}}
+
+\date{\today}
+\maketitle
+
+\section*{Introduction}
+\label{sec:introduction}
+The Mix-project for this assignment, including all relative functions, Unit-test and benchmarks can be found on GitHub:
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/9/morse}{Repo Programming II - Morse}% TODO FUNKAR DEN? ÄNDRA NAMN
+
+\section*{Methods}\label{sec:methods}
+\subsubsection*{Tools and packages}
+\label{subsec:tools}
+All code was written in \emph{IntelliJ IDEA}.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+\emph{GIT} and \emph{GitHub} were used for version control.
+Tests were performed with Elixir's built-in test framework \emph{ExUnit.}
+The report was written in \LaTeX.
+
+\subsubsection*{Test Driven Development}\label{sec:ttd}
+The development was an iterative approach with ''trail and errors''.
+The author practiced
+\href{https://www.elixirwiki.com/wiki/Test-Driven_Development_in_Elixir}{Test Driven Development}
+(TDD).
+The basic steps follow the \emph{Red-Green-Refactor cycle};
+writing failing tests (Red), make them pass (Green),
+and finally refactor the code.
+% For example, before creating ranges for part II,
+% one can first write a couple of test cases, as illustrated in the test-example below.
+%TODO.
+\inputminted[
+    label=Tests hello,
+    firstline=5,
+    lastline=17,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/morse_test.exs}
+\noindent
+\inputminted[
+    label=encode tests,
+    firstline=19,
+    lastline=30,
+    xleftmargin=-3mm,  % Adjust this value as needed
+    fontsize=\footnotesize,
+]{elixir}{../test/morse_test.exs}
+
+\section*{Result}
+\subsection*{Decoding Example}
+\label{sec:result}
+   \inputminted[
+       label=iex decode/2,
+       firstline=19,
+       lastline=21,
+       xleftmargin=-3mm,  % Adjust this value as needed
+       fontsize=\footnotesize,
+   ]{elixir}{../lib/morse.ex}
+\noindent 
+\subsection*{Encoding Example}
+   \inputminted[
+       label=iex encode/1,
+       firstline=61,
+       lastline=62,
+       xleftmargin=-3mm,  % Adjust this value as needed
+       fontsize=\footnotesize,
+   ]{elixir}{../lib/morse.ex}
+\noindent 
+All
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/9/morse/lib/morse.ex}{code (lib/morse.ex)} and
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/tree/main/tasks/9/morse/test/morse_test.exs}{tests (test/morse\_test.exs)}, 
+can be found on the author's
+\href{https://github.com/VincentFerrigan/kth-id1019-programming-ii/}{Github)}.
+
+
+\end{document}
