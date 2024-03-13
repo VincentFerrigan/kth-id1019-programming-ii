@@ -1,9 +1,25 @@
 defmodule Morse do
   @moduledoc """
-  Documentation for `Morse`.
+  A Morse module for encoding and decoding Morse code messages.
+  Provides functionality to decode Morse code signals into text and encode text messages into Morse code.
   """
 
   # Function to decode a given Morse code signal
+  def decode(signal, tree) when is_list(signal) do
+    # Split the signal into Morse code characters and decode each one
+    signal
+    |> to_string()
+    |> String.split(" ")
+    |> Enum.map(&decode_character(&1, tree))
+    |> Enum.join()
+  end
+
+  @doc """
+  ## Examples
+    iex> tree = MyMorseCode.tree()
+    iex> Morse.decode("...- .. -. -.-. . -. - ..-- ..-. . .-. .-. .. --. .- -.", tree)
+    "vincent ferrigan"
+  """
   def decode(signal, tree) do
     # Split the signal into Morse code characters and decode each one
     signal
@@ -36,14 +52,18 @@ defmodule Morse do
   defp char_to_string(:na), do: ""
   defp char_to_string(char) when is_integer(char), do: <<char>>
 
-
   ######## ENCODER ##############
   @encoding_table MyMorseCode.generate_encoding_table()
 
   # Function to encode a given text message into Morse code
+  @doc """
+  ## Examples
+    iex> Morse.encode("Vincent Ferrigan")
+    "...- .. -. -.-. . -. - ..-- ..-. . .-. .-. .. --. .- -."
+  """
   def encode(message) do
     message
-    |> String.downcase()  # Normalize the message to uppercase
+    |> String.downcase()  # Normalize the message to lowercase
     |> String.graphemes()  # Break the message into a list of characters
     |> Enum.map(&encode_character/1)  # Encode each character
     |> Enum.join(" ")  # Join encoded characters with spaces
