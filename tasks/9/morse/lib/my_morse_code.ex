@@ -50,5 +50,33 @@ def tree do
           {:node, 118, {:node, 51, nil, nil}, nil},
           {:node, 104, {:node, 52, nil, nil}, {:node, 53, nil, nil}}}}}}
   end
+  ####### Mapping the Tree #############
+
+  # Function to generate the encoding table from the Morse tree
+  def generate_encoding_table(tree \\ MyMorseCode.tree()) do
+    traverse_tree(tree, "", %{}) # Start traversal with an empty path and an empty map
+  end
+
+  # Recursive function to traverse the Morse tree and build the encoding map
+  defp traverse_tree({:node, char, long, short}, path, map) do
+    # Update the map with the current character (if it's not :na) and its path
+    updated_map = if char != :na, do: Map.put(map, char, path), else: map
+
+    # Recursively traverse the long and short branches, if they exist
+    updated_map =
+      if long != nil, do: traverse_tree(long, path <> "-", updated_map), else: updated_map
+
+    if short != nil, do: traverse_tree(short, path <> ".", updated_map), else: updated_map
+  end
+
+  # Handle the leaf nodes (end of branches)
+  defp traverse_tree(:nil, _path, map), do: map
+
+  # Helper function to convert the encoding table from ASCII values to characters
+  def convert_to_char_map(map) do
+    map
+    |> Enum.map(fn {ascii, morse} -> {List.to_string([ascii]), morse} end)
+    |> Map.new()
+  end
 
 end
