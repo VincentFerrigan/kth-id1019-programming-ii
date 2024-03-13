@@ -1,4 +1,4 @@
-defmodule Code do 
+defmodule MyMorseCode do
 
 # The codes that you should decode:
 
@@ -49,7 +49,6 @@ def tree do
         {:node, 115,
           {:node, 118, {:node, 51, nil, nil}, nil},
           {:node, 104, {:node, 52, nil, nil}, {:node, 53, nil, nil}}}}}}
-end
+  end
 
 end
-
